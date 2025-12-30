@@ -19,6 +19,9 @@ class DatabaseSeeder extends Seeder
             SuperAdminSeeder::class,
             StateSeeder::class,
             DistrictTehsilSeeder::class,
+            PortfolioSeeder::class,
+            PortfolioPermissionSeeder::class,
+            CommitteeSeeder::class,
             HomepageSeeder::class,
         ]);
     }

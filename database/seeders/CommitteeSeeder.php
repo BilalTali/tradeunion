@@ -93,7 +93,10 @@ class CommitteeSeeder extends Seeder
         ];
 
         foreach ($committees as $committee) {
-            Committee::create($committee);
+            Committee::updateOrCreate(
+                ['slug' => $committee['slug']],
+                $committee
+            );
         }
 
         $this->command->info('Successfully seeded ' . count($committees) . ' state-level committees.');
