@@ -7,10 +7,21 @@ use App\Models\AcademicCalendar;
 use App\Models\GovernmentOrder;
 use App\Models\ImportantLink;
 use Illuminate\Http\Request;
+use App\Models\HomepageContent;
 use Inertia\Inertia;
 
 class PageController extends Controller
 {
+    public function about()
+    {
+        $aboutContent = HomepageContent::where('key', 'about')
+            ->where('is_active', true)
+            ->first();
+
+        return Inertia::render('Public/About', [
+            'aboutContent' => $aboutContent
+        ]);
+    }
     public function governmentOrders(Request $request)
     {
         $query = GovernmentOrder::where('is_active', true)
@@ -63,15 +74,22 @@ class PageController extends Controller
         ]);
     }
 
-    public function importantLinks()
+    public function importantLinks(Request $request)
     {
-        $links = ImportantLink::where('is_active', true)
-            ->orderBy('sort_order')
-            ->get()
-            ->groupBy('department');
+        $query = ImportantLink::where('is_active', true)
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('department', 'asc');
+
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('department', 'like', '%' . $request->search . '%');
+        }
+
+        $links = $query->paginate(50)->withQueryString();
 
         return Inertia::render('Public/ImportantLinks', [
-            'groupedLinks' => $links
+            'links' => $links,
+            'filters' => $request->only(['search'])
         ]);
     }
     public function contact()
