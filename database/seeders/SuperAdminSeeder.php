@@ -13,7 +13,7 @@ class SuperAdminSeeder extends Seeder
     public function run(): void
     {
         \App\Models\User::firstOrCreate(
-            ['email' => 'admin@union.org'],
+            ['email' => 'official.jkecc@gmail.com'],
             [
                 'name' => 'Super Admin',
                 'password' => \Hash::make('password'),
