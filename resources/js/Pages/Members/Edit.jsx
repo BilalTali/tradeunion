@@ -208,10 +208,16 @@ export default function Edit({ member, states, districts, tehsils, authScope }) 
                                             Phone
                                         </label>
                                         <input
-                                            type="tel"
+                                            type="text"
                                             value={data.contact_phone}
-                                            onChange={(e) => setData('contact_phone', e.target.value)}
+                                            onChange={(e) => {
+                                                const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                                setData('contact_phone', val);
+                                            }}
                                             className="w-full border-gray-300 rounded-lg"
+                                            maxLength={10}
+                                            pattern="\d{10}"
+                                            title="Please enter exactly 10 digits"
                                         />
                                         {errors.contact_phone && (
                                             <p className="mt-1 text-sm text-red-600">{errors.contact_phone}</p>

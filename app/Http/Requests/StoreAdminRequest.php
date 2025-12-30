@@ -24,6 +24,7 @@ class StoreAdminRequest extends FormRequest
             'name' => 'required|string|max:255',
             // Strict email validation with RFC compliance and DNS verification
             'email' => 'required|email:rfc,dns|unique:users,email',
+            'phone' => ['nullable', 'regex:/^[0-9]{10}$/'],
             'password' => 'required|min:8|confirmed',
             'admin_role' => 'required|in:district_admin,district_president,tehsil_admin,tehsil_president',
             'entity_id' => 'required|integer',

@@ -143,6 +143,9 @@ class HandleInertiaRequests extends Middleware
                 'message' => fn () => $request->session()->get('message'),
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
+                'status' => fn () => $request->session()->get('status'),
+                'otp_required' => fn () => $request->session()->get('otp_required'),
+                'email' => fn () => $request->session()->get('email'),
             ],
         ];
     }

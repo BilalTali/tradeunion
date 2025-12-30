@@ -25,7 +25,7 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
-            'mobile' => ['nullable', 'string', 'max:15'],
+            'mobile' => ['nullable', 'regex:/^[0-9]{10}$/'],
             'institute' => ['nullable', 'string', 'max:255'],
             'residence' => ['nullable', 'string', 'max:500'],
             'district_id' => ['nullable', 'exists:districts,id'],

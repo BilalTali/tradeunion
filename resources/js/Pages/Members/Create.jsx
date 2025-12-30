@@ -160,11 +160,16 @@ export default function Create({ states, districts, tehsils, authScope }) {
                                             Phone (10 digits) <span className="text-red-500">*</span>
                                         </label>
                                         <input
-                                            type="tel"
+                                            type="text"
                                             value={data.contact_phone}
-                                            onChange={(e) => setData('contact_phone', e.target.value)}
+                                            onChange={(e) => {
+                                                const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                                setData('contact_phone', val);
+                                            }}
                                             className="w-full border-gray-300 rounded-lg"
-                                            pattern="[0-9]{10}"
+                                            maxLength={10}
+                                            pattern="\d{10}"
+                                            title="Please enter exactly 10 digits"
                                             required
                                         />
                                         {errors.contact_phone && (

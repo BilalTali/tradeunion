@@ -28,7 +28,7 @@ class UpdateMemberRequest extends FormRequest
             'photo' => 'nullable|image|max:2048',
             'dob' => 'nullable|date|before:today',
             'contact_email' => 'nullable|email|max:255',
-            'contact_phone' => 'nullable|string|max:20',
+            'contact_phone' => ['nullable', 'regex:/^[0-9]{10}$/'],
             'school_name' => 'sometimes|required|string|max:255',
             // 'designation' => 'sometimes|required|string|max:255', // Removed
             // 'subject' => 'nullable|string|max:255', // Removed

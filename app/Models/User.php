@@ -89,4 +89,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Grievance::class);
     }
+
+    /**
+     * Get the user's phone number (alias for mobile).
+     */
+    public function getPhoneAttribute()
+    {
+        return $this->mobile;
+    }
 }

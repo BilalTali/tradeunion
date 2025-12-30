@@ -97,6 +97,7 @@ class AdminController extends Controller
         }
 
         // Determine role based on current user
+        // Determine role based on current user
         if ($user->role === 'super_admin') {
             $validated['role'] = $validated['admin_role']; // district_admin or district_president
             $validated['district_id'] = $validated['entity_id'];
@@ -105,6 +106,12 @@ class AdminController extends Controller
             $validated['role'] = $validated['admin_role']; // tehsil_admin or tehsil_president
             $validated['district_id'] = $user->district_id;
             $validated['tehsil_id'] = $validated['entity_id'];
+        }
+
+        // Map phone to mobile for database storage
+        if (isset($validated['phone'])) {
+            $validated['mobile'] = $validated['phone'];
+            unset($validated['phone']);
         }
 
         // Debug logging
@@ -156,6 +163,13 @@ class AdminController extends Controller
             $data['tehsils'] = Tehsil::where('district_id', $user->district_id)->get();
         }
 
+        // Map mobile back to phone for frontend if needed, though frontend likely uses admin.phone OR we should update frontend.
+        // Frontend Edit.jsx uses `admin.phone`. Admin model (User) uses `mobile`. 
+        // We really should strictly use `mobile` everywhere for User, but changing frontend is invasive.
+        // For now, let's fix the write. The read might need accessors.
+        // Actually, User model has 'phone' in fillable... maybe it has an accessor?
+        // Let's check User model for 'phone' accessor later.
+
         return Inertia::render('Admins/Edit', $data);
     }
 
@@ -173,6 +187,7 @@ class AdminController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $admin->id,
+            'phone' => ['nullable', 'regex:/^[0-9]{10}$/'],
             'photo' => 'nullable|image|max:2048', // Validation for photo
             'is_active' => 'boolean',
             'password' => 'nullable|min:8|confirmed',
@@ -191,6 +206,12 @@ class AdminController extends Controller
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($admin->photo_path);
             }
             $validated['photo_path'] = $request->file('photo')->store('admins/photos', 'public');
+        }
+
+        // Map phone to mobile
+        if (isset($validated['phone'])) {
+            $validated['mobile'] = $validated['phone'];
+            unset($validated['phone']);
         }
 
         $admin->update($validated);

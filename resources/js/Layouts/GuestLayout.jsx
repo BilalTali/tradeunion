@@ -118,7 +118,8 @@ export default function GuestLayout({ children }) {
                     </div>
                 </div>
             </div>
-            <style jsx>{`
+            <style dangerouslySetInnerHTML={{
+                __html: `
                 @keyframes spin-slow {
                     from { transform: rotate(0deg); }
                     to { transform: rotate(360deg); }
@@ -126,7 +127,7 @@ export default function GuestLayout({ children }) {
                 .animate-spin-slow {
                     animation: spin-slow 60s linear infinite;
                 }
-            `}</style>
+            `}} />
         </div>
     );
 }

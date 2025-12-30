@@ -137,12 +137,18 @@ export default function UpdateProfileInformation({
 
                     <TextInput
                         id="mobile"
-                        type="tel"
+                        type="text"
                         className="mt-1 block w-full"
                         value={data.mobile}
-                        onChange={(e) => setData('mobile', e.target.value)}
+                        onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                            setData('mobile', val);
+                        }}
                         autoComplete="tel"
-                        placeholder="+91 1234567890"
+                        placeholder="10-digit mobile number"
+                        maxLength={10}
+                        pattern="\d{10}"
+                        title="Please enter exactly 10 digits"
                     />
 
                     <InputError className="mt-2" message={errors.mobile} />

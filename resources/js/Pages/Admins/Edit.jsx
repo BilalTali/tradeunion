@@ -78,10 +78,16 @@ export default function Edit({ admin, districts, tehsils, auth }) {
                                     Phone Number
                                 </label>
                                 <input
-                                    type="tel"
+                                    type="text"
                                     value={data.phone}
-                                    onChange={(e) => setData('phone', e.target.value)}
+                                    onChange={(e) => {
+                                        const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                        setData('phone', val);
+                                    }}
                                     className="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                                    maxLength={10}
+                                    pattern="\d{10}"
+                                    title="Please enter exactly 10 digits"
                                 />
                                 {errors.phone && <p className="mt-2 text-sm text-red-600">{errors.phone}</p>}
                             </div>
