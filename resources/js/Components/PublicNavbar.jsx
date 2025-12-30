@@ -17,17 +17,22 @@ export default function PublicNavbar() {
                                     <img
                                         src={`/storage/${officeProfile.primary_logo_path}`}
                                         alt="Logo"
-                                        className="w-12 h-12 rounded-full object-cover"
+                                        className="w-16 h-16 rounded-full object-cover shadow-sm border-2 border-white"
                                     />
                                 ) : (
-                                    <div className="w-10 h-10 bg-union-primary rounded-full flex items-center justify-center text-white font-bold">
+                                    <div className="w-16 h-16 bg-union-primary rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-sm border-2 border-white">
                                         {officeProfile?.short_name ? officeProfile.short_name.substring(0, 2).toUpperCase() : 'JK'}
                                     </div>
                                 )}
                             </Link>
-                            <span className="ml-3 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-700 via-red-600 to-amber-600 text-lg sm:text-xl hidden sm:block uppercase tracking-tight">
-                                {officeProfile?.organization_name || 'J&K Employees Assoc.'}
-                            </span>
+                            <div className="ml-4 hidden sm:flex flex-col justify-center">
+                                <span className="font-black text-3xl text-transparent bg-clip-text bg-gradient-to-r from-red-700 via-red-600 to-amber-600 uppercase tracking-tighter leading-none">
+                                    {officeProfile?.short_name || 'JKECC'}
+                                </span>
+                                <span className="text-xs font-bold text-gray-600 uppercase tracking-wide leading-tight mt-0.5">
+                                    {officeProfile?.organization_name || 'J&K Employees Assoc.'}
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <div className="hidden sm:ml-6 sm:flex sm:space-x-8 items-center">

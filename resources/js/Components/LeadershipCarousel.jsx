@@ -2,6 +2,12 @@ import { useState, useEffect } from 'react';
 
 export default function LeadershipCarousel({ messages }) {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [expanded, setExpanded] = useState(false);
+
+    // Reset expansion when message changes
+    useEffect(() => {
+        setExpanded(false);
+    }, [currentIndex]);
 
     // Auto-advance
     useEffect(() => {
@@ -17,6 +23,7 @@ export default function LeadershipCarousel({ messages }) {
     if (!messages || messages.length === 0) return null;
 
     const currentMessage = messages[currentIndex];
+    const isLongText = currentMessage.message && currentMessage.message.length > 150;
 
     return (
         <section className="bg-white py-12 border-b">
@@ -52,9 +59,22 @@ export default function LeadershipCarousel({ messages }) {
                         {/* Content */}
                         <div className="md:col-span-2 text-center md:text-left">
                             <h2 className="text-2xl font-bold text-gray-900 mb-4">Message from Leadership</h2>
-                            <div className="prose prose-lg text-gray-700 mb-6 italic">
+                            <div className={`prose prose-lg text-gray-700 mb-4 italic transition-all duration-300 ${expanded ? '' : 'line-clamp-2'}`}>
                                 &quot;{currentMessage.message}&quot;
                             </div>
+
+                            {isLongText && (
+                                <button
+                                    onClick={() => setExpanded(!expanded)}
+                                    className="text-blue-600 font-bold text-sm uppercase mb-6 hover:underline focus:outline-none"
+                                >
+                                    {expanded ? 'Read Less' : 'Read More'}
+                                </button>
+                            )}
+
+                            {!isLongText && <div className="mb-6"></div>}
+
+
                             <h3 className="text-xl font-bold text-blue-900">{currentMessage.name}</h3>
 
                             {/* Dots Navigation */}
