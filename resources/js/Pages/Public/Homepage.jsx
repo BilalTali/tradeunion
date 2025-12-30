@@ -1,0 +1,639 @@
+import PublicNavbar from '@/Components/PublicNavbar';
+import HomeHeroSlider from '@/Components/HomeHeroSlider';
+import LeadershipCarousel from '@/Components/LeadershipCarousel';
+import AchievementsSection from '@/Components/AchievementsSection';
+import { Head, Link, useForm, usePage, router } from '@inertiajs/react';
+import { useState } from 'react';
+
+export default function Homepage({ officeProfile, heroSlides, contents, approvedFeedbacks = [], messages, achievements }) {
+    const { auth } = usePage().props;
+    const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+    const { data, setData, post, processing, errors, reset } = useForm({
+        subject: '',
+        category: 'Other',
+        message: ''
+    });
+    // Helper to get text/JSON content safely
+    const getContent = (key, defaultText = '') => {
+        return contents?.[key]?.content || defaultText;
+    };
+
+    // Helper to get parsed JSON list
+    const getList = (key) => {
+        try {
+            const val = contents?.[key]?.content;
+            if (!val) return [];
+            return typeof val === 'string' ? JSON.parse(val) : val;
+        } catch (e) {
+
+            return [];
+        }
+    };
+
+    // Helper to get settings
+    const getSettings = (key) => contents?.[key]?.settings || {};
+
+    // Helper to get title/subtitle
+    const getSectionInfo = (key, defaultTitle, defaultSubtitle) => ({
+        title: contents?.[key]?.title || defaultTitle,
+        subtitle: contents?.[key]?.subtitle || defaultSubtitle
+    });
+
+    // Theme Configuration
+    const theme = {
+        primary: '#FF9933', // Saffron
+        secondary: '#138808', // India Green
+        navy: '#1F2937', // Neutral Dark Gray (replacing Navy)
+        font: '"Merriweather", serif' // Authoritative font
+    };
+
+    // Data Sections
+    const missionCards = getList('mission_cards');
+    const structure = getList('structure');
+    const journey = getList('journey');
+    const features = getList('features');
+    const missionInfo = getSectionInfo('mission_cards', 'Our Mission & Services', 'Dedicated to the welfare of every state employee');
+    const structureInfo = getSectionInfo('structure', 'Organizational Hierarchy', 'A transparent, democratic framework');
+    const journeyInfo = getSectionInfo('journey', 'Membership Journey', 'From registration to leadership');
+    const featuresInfo = getSectionInfo('features', 'Digital Infrastructure', 'Modernizing union operations');
+    const aboutInfo = getSectionInfo('about', 'About the Association', '');
+    const aboutText = getContent('about');
+
+    return (
+        <div className="min-h-screen font-sans text-gray-900" style={{ fontFamily: theme.font }}>
+            <Head>
+                <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+                <style>{`
+                    :root {
+                        --color-saffron: #FF9933;
+                        --color-white: #ffffff;
+                        --color-green: #138808;
+                        --color-navy: #1F2937;
+                    }
+                    .font-serif { font-family: 'Merriweather', serif; }
+                    .font-sans { font-family: 'Inter', sans-serif; }
+                    
+                    .bg-tricolor-gradient {
+                        background: linear-gradient(90deg, var(--color-saffron) 0%, #ffffff 50%, var(--color-green) 100%);
+                    }
+                    .border-tricolor-top {
+                        border-top: 4px solid transparent;
+                        border-image: linear-gradient(to right, var(--color-saffron), #ffffff, var(--color-green)) 1;
+                    }
+                    .text-saffron { color: var(--color-saffron); }
+                    .text-navy { color: var(--color-navy); }
+                    .text-green { color: var(--color-green); }
+                `}</style>
+                <title>{officeProfile?.organization_name || 'J&K State Employees Association'}</title>
+            </Head>
+
+            <PublicNavbar />
+
+            {/* HERO SLIDER */}
+            <HomeHeroSlider
+                slides={heroSlides}
+                defaultTitle={officeProfile?.organization_name}
+                defaultSubtitle={officeProfile?.tagline}
+            />
+
+            {/* TRICOLOR SEPARATOR LINE */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-[#FF9933] via-white to-[#138808]"></div>
+
+            {/* QUICK LINKS BAR */}
+            <div className="relative bg-gradient-to-r from-[#FF9933] via-white to-[#138808] py-10 overflow-hidden border-y border-gray-200 shadow-md">
+                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #000000 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                        <Link href="/government-orders" className="flex items-center justify-center p-4 rounded-xl bg-white/40 hover:bg-white/60 border border-white/50 transition-all group backdrop-blur-md shadow-sm hover:shadow-lg hover:-translate-y-1">
+                            <span className="p-3 bg-white rounded-full group-hover:scale-110 transition-transform mr-4 shadow-md">
+                                <svg className="w-6 h-6 text-[#FF9933]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            </span>
+                            <span className="font-bold text-lg font-serif tracking-wide text-gray-900">Government Orders</span>
+                        </Link>
+                        <Link href="/academic-calendar" className="flex items-center justify-center p-4 rounded-xl bg-white/40 hover:bg-white/60 border border-white/50 transition-all group backdrop-blur-md shadow-sm hover:shadow-lg hover:-translate-y-1">
+                            <span className="p-3 bg-white rounded-full group-hover:scale-110 transition-transform mr-4 shadow-md">
+                                <svg className="w-6 h-6 text-[#1F2937]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </span>
+                            <span className="font-bold text-lg font-serif tracking-wide text-gray-900">Academic Calendar</span>
+                        </Link>
+                        <Link href="/important-links" className="flex items-center justify-center p-4 rounded-xl bg-white/40 hover:bg-white/60 border border-white/50 transition-all group backdrop-blur-md shadow-sm hover:shadow-lg hover:-translate-y-1">
+                            <span className="p-3 bg-white rounded-full group-hover:scale-110 transition-transform mr-4 shadow-md">
+                                <svg className="w-6 h-6 text-[#138808]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                            </span>
+                            <span className="font-bold text-lg font-serif tracking-wide text-gray-900">Important Links</span>
+                        </Link>
+                    </div>
+                </div>
+            </div>
+
+            {/* LEADERSHIP CAROUSEL */}
+            <div className="bg-gradient-to-b from-orange-50 to-white">
+                <LeadershipCarousel messages={messages} />
+            </div>
+
+            {/* EMPLOYEE VOICES / FEEDBACK SECTION (Moved) */}
+            <section className="py-16 sm:py-20 bg-gradient-to-br from-white to-orange-50/30">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 font-serif">
+                            The Voice of Unity
+                        </h2>
+                        <div className="h-1 w-24 bg-[#FF9933] mx-auto rounded-full mb-4"></div>
+                        <p className="text-center text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
+                            {approvedFeedbacks.length > 0 ? "Real experiences from our members serving the nation." : "Join the conversation and make your voice heard."}
+                        </p>
+                    </div>
+
+                    {approvedFeedbacks.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                            {approvedFeedbacks.map((feedback, idx) => (
+                                <div key={idx} className="bg-white p-6 rounded-lg shadow-[0_4px_20px_-5px_rgba(0,0,0,0.1)] hover:shadow-xl transition-all border-t-4 border-[#FF9933] group hover:-translate-y-1 duration-300">
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <div className="w-12 h-12 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF9933] font-bold text-xl group-hover:bg-[#FF9933] group-hover:text-white transition-colors">
+                                            {feedback.user.name.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-gray-900 font-serif">{feedback.user.name}</p>
+                                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">{new Date(feedback.created_at).toLocaleDateString()}</p>
+                                        </div>
+                                    </div>
+                                    <div className="mb-3">
+                                        <span className="inline-block px-2 py-0.5 text-xs font-bold bg-gray-100 text-gray-600 rounded uppercase tracking-wide mr-2">{feedback.category}</span>
+                                    </div>
+                                    <h4 className="font-bold text-gray-800 mb-2">{feedback.subject}</h4>
+                                    <p className="text-gray-600 italic mb-4 text-sm leading-relaxed">&quot;{feedback.message}&quot;</p>
+                                    {feedback.admin_response && (
+                                        <div className="pt-4 border-t border-gray-100 bg-green-50/50 -mx-6 px-6 pb-2 mt-4">
+                                            <p className="text-xs font-bold text-[#138808] mb-1 uppercase tracking-wide flex items-center gap-1">
+                                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" /></svg>
+                                                Official Response
+                                            </p>
+                                            <p className="text-sm text-gray-700">{feedback.admin_response}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-12 mb-8 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                            <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                            <p className="text-gray-500 font-medium">Be the first to share your voice!</p>
+                        </div>
+                    )}
+
+                    <div className="text-center">
+                        <button
+                            onClick={() => {
+                                if (auth.user) {
+                                    setShowFeedbackModal(true);
+                                } else {
+                                    router.visit('/login');
+                                }
+                            }}
+                            className="px-8 py-4 bg-gradient-to-r from-[#138808] to-[#0f6b06] text-white rounded-lg hover:shadow-2xl font-bold text-lg transition-all shadow-lg border-b-4 border-green-900 active:border-0 active:translate-y-1"
+                        >
+                            <svg className="w-5 h-5 inline-block mr-2 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Share Your Feedback / Grievance
+                        </button>
+                        {!auth.user && (
+                            <p className="mt-4 text-sm text-gray-500 flex items-center justify-center gap-1">
+                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                                </svg>
+                                Authenticated Members only
+                            </p>
+                        )}
+                    </div>
+                </div>
+            </section>
+
+            {/* ACHIEVEMENTS SECTION (Re-styled wrapper) */}
+            <div className="border-t border-gray-100">
+                <AchievementsSection achievements={achievements} />
+            </div>
+
+            {/* WHAT WE DO (Mission Cards) */}
+            <section
+                className="py-16 sm:py-20 relative overflow-hidden"
+                style={{ backgroundColor: '#fff' }}
+            >
+                {/* Subtle Ashoka Chakra Watermark */}
+                <div className="absolute -right-20 -top-20 opacity-[0.03] pointer-events-none">
+                    <svg className="w-[400px] h-[400px] animate-spin-slow" viewBox="0 0 24 24" fill="#6B7280"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" /></svg>
+                </div>
+
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="inline-block px-3 py-1 bg-orange-50 text-[#FF9933] border border-orange-100 rounded-full text-xs font-bold tracking-widest uppercase mb-3">Our Core Mandate</span>
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#1F2937] mb-4 font-serif">
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#FF9933] to-[#138808]">
+                                {missionInfo.title}
+                            </span>
+                        </h2>
+                        <div className="h-1 w-24 bg-gradient-to-r from-[#FF9933] via-white to-[#138808] mx-auto rounded-full mb-4"></div>
+                        <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed font-medium">
+                            {missionInfo.subtitle}
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {missionCards.length > 0 ? missionCards.map((card, idx) => (
+                            <ServiceCard
+                                key={idx}
+                                icon={card.icon}
+                                title={card.title}
+                                description={card.description}
+                                index={idx}
+                            />
+                        )) : (
+                            <div className="col-span-4 text-center text-gray-500 italic bg-gray-50 p-8 rounded-lg border border-dashed border-gray-300">
+                                Mission services will appear here.
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </section>
+
+            {/* ORGANIZATIONAL STRUCTURE */}
+            <section
+                className="py-16 sm:py-20 bg-gray-50"
+                style={{ backgroundColor: getSettings('structure').bg_color || '#f9fafb' }}
+            >
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 font-serif">
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#FF9933] to-[#138808]">
+                                {structureInfo.title}
+                            </span>
+                        </h2>
+                        <div className="h-1 w-24 bg-gray-300 mx-auto rounded-full mb-4"></div>
+                        <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto text-lg leading-relaxed">
+                            {structureInfo.subtitle}
+                        </p>
+                    </div>
+
+                    <div className="max-w-4xl mx-auto space-y-4">
+                        {structure.map((level, idx) => (
+                            <HierarchyLevel
+                                key={idx}
+                                level={level.level}
+                                color={level.color || 'border-gray-300'}
+                                description={level.description}
+                                scope={level.scope}
+                                index={idx}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* MEMBER JOURNEY */}
+            <section
+                className="py-16 sm:py-20 bg-white"
+                style={{ backgroundColor: getSettings('journey').bg_color || '#ffffff' }}
+            >
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-16">
+                        <span className="inline-block px-3 py-1 bg-green-50 text-[#138808] border border-green-100 rounded-full text-xs font-bold tracking-widest uppercase mb-3">Path to Leadership</span>
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 font-serif">
+                            {journeyInfo.title}
+                        </h2>
+                        <div className="h-1 w-24 bg-gradient-to-r from-[#FF9933] via-white to-[#138808] mx-auto rounded-full mb-4"></div>
+                        <p className="text-center text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
+                            {journeyInfo.subtitle}
+                        </p>
+                    </div>
+
+                    <div className="max-w-4xl mx-auto">
+                        <div className="relative">
+                            <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-[#FF9933] via-[#ffffff] to-[#138808] opacity-30"></div>
+                            <div className="space-y-12">
+                                {journey.map((step, idx) => (
+                                    <JourneyStep
+                                        key={idx}
+                                        number={step.number}
+                                        title={step.title}
+                                        description={step.description}
+                                        timeline={step.timeline}
+                                        position={step.position || (idx % 2 === 0 ? 'left' : 'right')}
+                                        index={idx}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* DIGITAL FEATURES */}
+            <section
+                className="py-16 sm:py-20 relative overflow-hidden transition-all duration-500"
+                style={{
+                    background: 'linear-gradient(90deg, #FF9933 0%, #ffffff 50%, #138808 100%)'
+                }}
+            >
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #000 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
+
+                {/* White Overlay for Readability */}
+                <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px]"></div>
+
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 font-serif text-gray-900 drop-shadow-sm">
+                            {featuresInfo.title}
+                        </h2>
+                        <div className="h-1 w-24 bg-gray-800 mx-auto rounded-full mb-4"></div>
+                        <p className="text-center text-gray-700 max-w-2xl mx-auto text-lg leading-relaxed font-medium">
+                            {featuresInfo.subtitle}
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {features.map((feature, idx) => (
+                            <DigitalFeature
+                                key={idx}
+                                icon={feature.title.includes('ID Card') ? (
+                                    <svg className="w-12 h-12 mx-auto text-[#FF9933] drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                                    </svg>
+                                ) : feature.title.includes('Voting') ? (
+                                    <svg className="w-12 h-12 mx-auto text-[#138808] drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                    </svg>
+                                ) : feature.icon}
+                                title={feature.title}
+                                description={feature.description}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+
+
+            {/* ABOUT / FOOTER PREVIEW */}
+            <section
+                className="py-16 sm:py-20"
+                style={{ backgroundColor: getSettings('about').bg_color || '#f9fafb' }}
+            >
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-8 font-serif">
+                        {aboutInfo.title}
+                    </h2>
+                    <div className="prose prose-lg mx-auto text-gray-700 leading-relaxed">
+                        <p>{aboutText}</p>
+                    </div>
+
+                    <div className="mt-12 flex justify-center gap-6">
+                        <Link href="/about" className="text-[#FF9933] font-bold text-lg hover:text-[#e08020] transition flex items-center gap-2">
+                            Read Constitution <span className="text-xl">&rarr;</span>
+                        </Link>
+                        <Link href="/contact" className="text-[#138808] font-bold text-lg hover:text-[#0f6b06] transition flex items-center gap-2">
+                            Contact Us <span className="text-xl">&rarr;</span>
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
+            {/* Footer Area */}
+            <footer className="text-white py-16 border-t-8 border-[#FF9933]" style={{ backgroundColor: '#111827' }}>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-12">
+                    {/* Organization Info */}
+                    <div>
+                        <h3 className="text-xl font-bold mb-6 font-serif tracking-wider text-[#FF9933]">{officeProfile?.organization_name}</h3>
+
+                        {/* Dynamic Footer Content */}
+                        <div className="space-y-4">
+                            {/* Line 1: Address */}
+                            <p className="text-gray-400 leading-relaxed font-sans text-sm">
+                                {officeProfile?.footer_line_1 || officeProfile?.full_address || 'Official Trade Union Portal'}
+                            </p>
+
+                            {/* Line 2: Emails */}
+                            <div className="space-y-2 text-gray-400 text-sm">
+                                {officeProfile?.footer_line_2 ? (
+                                    <p className="flex items-center gap-2">
+                                        <svg className="w-4 h-4 text-[#138808]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                        {officeProfile?.footer_line_2}
+                                    </p>
+                                ) : (
+                                    <p className="flex items-center gap-2">
+                                        <svg className="w-4 h-4 text-[#138808]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                        {officeProfile?.primary_email}
+                                    </p>
+                                )}
+
+                                {/* Line 3: Contacts / Reg No */}
+                                {officeProfile?.footer_line_3 ? (
+                                    <p className="flex items-center gap-2">
+                                        <svg className="w-4 h-4 text-[#FF9933]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                        {officeProfile.footer_line_3}
+                                    </p>
+                                ) : (
+                                    <p className="flex items-center gap-2">
+                                        <svg className="w-4 h-4 text-[#FF9933]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                        Reg No: {officeProfile?.registration_number}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Quick Links */}
+                    <div>
+                        <h3 className="text-xl font-bold mb-6 font-serif tracking-wider text-white">Quick Links</h3>
+                        <ul className="space-y-3 text-gray-400 text-sm">
+                            <li><Link href="/about" className="hover:text-[#FF9933] transition-colors flex items-center gap-2"><span>&rsaquo;</span> About Us</Link></li>
+                            <li><Link href="/contact" className="hover:text-[#FF9933] transition-colors flex items-center gap-2"><span>&rsaquo;</span> Contact</Link></li>
+                            <li><Link href="/login" className="hover:text-[#FF9933] transition-colors flex items-center gap-2"><span>&rsaquo;</span> Member Login</Link></li>
+                            <li><Link href="/privacy-policy" className="hover:text-[#FF9933] transition-colors flex items-center gap-2"><span>&rsaquo;</span> Privacy Policy</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Social / Other */}
+                    <div>
+                        <h3 className="text-xl font-bold mb-6 font-serif tracking-wider text-white">Connect</h3>
+                        <p className="text-gray-400 text-sm mb-6">Follow us for the latest union updates and notifications.</p>
+                        <div className="flex space-x-4">
+                            {/* Facebook */}
+                            <a href="#" className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-full hover:bg-[#1877F2] hover:text-white transition-all duration-300 border border-white/10">
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" /></svg>
+                            </a>
+                            {/* Twitter */}
+                            <a href="#" className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-full hover:bg-black hover:text-white transition-all duration-300 border border-white/10">
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M13.6823 10.6218L20.2391 3H18.6854L12.9921 9.61788L8.44486 3H3.2002L10.0765 13.0074L3.2002 21H4.75404L10.7663 14.0113L15.5685 21H20.8131L13.6819 10.6218ZM11.5541 13.0956L10.8574 12.0991L5.31391 4.16971H7.70053L12.1742 10.5689L12.8709 11.5655L18.6861 19.8835H16.2995L11.5541 13.096V13.0956Z" /></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-white/5 text-center text-gray-500 text-sm">
+                    &copy; {new Date().getFullYear()} {officeProfile?.organization_name}. All rights reserved.
+                </div>
+            </footer>
+
+            {/* Grievance Submission Modal */}
+            {showFeedbackModal && auth.user && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+                    <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden">
+                        <div className="p-6 border-b border-gray-100 bg-[#138808]">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                <svg className="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                Submit Grievance / Feedback
+                            </h3>
+                        </div>
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                post(route('grievances.store'), {
+                                    preserveScroll: true,
+                                    onSuccess: () => {
+                                        setShowFeedbackModal(false);
+                                        reset();
+                                    }
+                                });
+                            }}
+                            className="p-6 space-y-5"
+                        >
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Subject</label>
+                                <input
+                                    type="text"
+                                    value={data.subject}
+                                    onChange={(e) => setData('subject', e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#138808] focus:border-[#138808] transition-shadow bg-gray-50 focus:bg-white"
+                                    placeholder="Brief subject of your grievance"
+                                    required
+                                />
+                                {errors.subject && <p className="mt-1 text-sm text-red-600 font-medium">{errors.subject}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Category</label>
+                                <select
+                                    value={data.category}
+                                    onChange={(e) => setData('category', e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#138808] focus:border-[#138808] transition-shadow bg-gray-50 focus:bg-white"
+                                >
+                                    <option value="Other">Other</option>
+                                    <option value="Transfer">Transfer</option>
+                                    <option value="Pay Related">Pay Related</option>
+                                    <option value="Harassment">Harassment</option>
+                                </select>
+                                {errors.category && <p className="mt-1 text-sm text-red-600 font-medium">{errors.category}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">
+                                    Your Message
+                                </label>
+                                <textarea
+                                    value={data.message}
+                                    onChange={(e) => setData('message', e.target.value)}
+                                    rows={5}
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#138808] focus:border-[#138808] transition-shadow bg-gray-50 focus:bg-white resize-none"
+                                    placeholder="Share your thoughts, suggestions, or experiences..."
+                                    required
+                                />
+                                {errors.message && (
+                                    <p className="mt-1 text-sm text-red-600 font-medium">{errors.message}</p>
+                                )}
+                            </div>
+
+                            <div className="flex items-center gap-3 pt-2">
+                                <button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="flex-1 px-6 py-3 bg-[#138808] text-white rounded-lg hover:bg-green-800 font-semibold transition-all shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
+                                >
+                                    {processing ? 'Submitting...' : 'Submit Grievance'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => { setShowFeedbackModal(false); reset(); }}
+                                    className="px-6 py-3 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 font-medium transition-all"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ------------------- INLINE COMPONENTS (Reused) ------------------- //
+
+// ------------------- INLINE COMPONENTS (Reused) ------------------- //
+
+function ServiceCard({ icon, title, description, index }) {
+    const borderColor = index % 3 === 0 ? 'border-[#FF9933]' : index % 3 === 1 ? 'border-[#FFFFFF]' : 'border-[#138808]';
+    return (
+        <div className={`bg-white p-6 sm:p-8 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 border-t-4 ${borderColor} hover:-translate-y-2 group`}>
+            <div className="text-4xl sm:text-5xl mb-4 sm:mb-6 group-hover:scale-110 transition-transform">{icon}</div>
+            <h3 className="text-xl font-bold text-[#1F2937] mb-3 font-serif group-hover:text-[#FF9933] transition-colors">{title}</h3>
+            <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{description}</p>
+        </div>
+    );
+}
+
+function HierarchyLevel({ level, color, description, scope, index }) {
+    return (
+        <div className={`bg-white border-l-4 ${color === 'border-gray-300' ? 'border-[#1F2937]' : color} p-5 rounded-r-lg shadow-md hover:shadow-lg hover:translate-x-2 transition-all flex items-center gap-4`}>
+            <div className="hidden sm:flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 text-gray-500 font-bold border border-gray-200 shrink-0">
+                {index + 1}
+            </div>
+            <div className="flex-1">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-1">
+                    <h3 className="text-lg font-bold text-gray-900 font-serif">{level}</h3>
+                    <span className={`text-xs font-bold px-2 py-1 rounded uppercase tracking-wider ${scope === 'State' ? 'bg-orange-100 text-orange-800' : scope === 'District' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>
+                        {scope}
+                    </span>
+                </div>
+                <p className="text-gray-600 text-sm">{description}</p>
+            </div>
+        </div>
+    );
+}
+
+function JourneyStep({ number, title, description, timeline, position, index }) {
+    // Tricolor border logic
+    const borderColor = index % 3 === 0 ? 'border-[#FF9933]' : index % 3 === 1 ? 'border-gray-300' : 'border-[#138808]';
+
+    return (
+        <div className={`relative flex flex-col md:flex-row items-center ${position === 'left' ? 'md:flex-row-reverse' : ''}`}>
+            <div className="hidden md:block w-1/2"></div>
+
+            {/* Center Node */}
+            <div className={`absolute left-4 md:left-1/2 transform md:-translate-x-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white text-[#1F2937] font-bold z-10 border-4 border-[#FF9933] shadow-lg text-sm transition-transform hover:scale-125`}>
+                {number}
+            </div>
+
+            <div className={`w-full md:w-1/2 pl-16 md:pl-0 ${position === 'left' ? 'md:pr-16 text-left md:text-right' : 'md:pl-16 text-left'}`}>
+                <div className={`bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-all border-t-4 ${borderColor} group`}>
+                    <span className="inline-block px-2 py-1 rounded text-xs font-bold bg-gray-100 text-gray-600 mb-2 uppercase tracking-wide group-hover:bg-[#138808] group-hover:text-white transition-colors">
+                        {timeline}
+                    </span>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 font-serif">{title}</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function DigitalFeature({ icon, title, description }) {
+    return (
+        <div className="text-center p-6 bg-white/80 rounded-xl transition-all hover:bg-white shadow-lg backdrop-blur-md border border-white/50 group hover:-translate-y-2">
+            <div className="text-4xl sm:text-5xl mb-4 group-hover:scale-110 transition-transform drop-shadow-sm">{icon}</div>
+            <h3 className="font-bold text-gray-900 mb-3 text-lg font-serif tracking-wide">{title}</h3>
+            <p className="text-sm text-gray-700 leading-relaxed font-medium">{description}</p>
+        </div>
+    );
+}

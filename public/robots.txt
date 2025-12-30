@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+
+# Public pages
+Allow: /about
+Allow: /contact
+Allow: /blog
+Allow: /government-orders
+Allow: /academic-calendar
+Allow: /important-links
+Allow: /privacy-policy
+
+# Disallow admin/member areas
+Disallow: /login
+Disallow: /register
+Disallow: /state/
+Disallow: /district/
+Disallow: /tehsil/
+Disallow: /member/
+Disallow: /api/
+
+# Disallow file directories
+Disallow: /storage/
+
+# Sitemap
+Sitemap: http://127.0.0.1:8000/sitemap.xml

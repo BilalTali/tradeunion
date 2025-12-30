@@ -1,0 +1,340 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        echo "Starting Migration...\n";
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+        try {
+            // 1. Rename Table
+            echo "Step 1: Renaming Table...\n";
+            if (Schema::hasTable('zones') && !Schema::hasTable('tehsils')) {
+                Schema::rename('zones', 'tehsils');
+                echo "Renamed zones to tehsils.\n";
+            } else {
+                echo "Skipped Step 1 (tehsils likely exists)\n";
+            }
+
+            // 2. Rename Columns in Users
+            echo "Step 2: Updating Users...\n";
+            if (Schema::hasTable('users')) {
+                Schema::table('users', function (Blueprint $table) {
+                    if (Schema::hasColumn('users', 'zone_id')) {
+                        echo "Dropping FK users...\n";
+                        try { $table->dropForeign('users_zone_id_foreign'); } catch (\Throwable $e) { echo "Users FK Drop Error: " . $e->getMessage() . "\n"; }
+                        try { $table->dropForeign(['zone_id']); } catch (\Throwable $e) { echo "Users FK Drop Array Error: " . $e->getMessage() . "\n"; }
+                        
+                        echo "Renaming user column...\n";
+                        $table->renameColumn('zone_id', 'tehsil_id');
+                    }
+                });
+                // Re-add FK
+                Schema::table('users', function (Blueprint $table) {
+                    if (Schema::hasColumn('users', 'tehsil_id')) {
+                         echo "Adding FK users...\n";
+                         $table->foreign('tehsil_id')->references('id')->on('tehsils')->nullOnDelete();
+                    }
+                });
+            }
+
+            // 3. Rename Columns in Members
+            echo "Step 3: Updating Members...\n";
+            if (Schema::hasTable('members')) {
+                Schema::table('members', function (Blueprint $table) {
+                    if (Schema::hasColumn('members', 'zone_id')) {
+                        echo "Dropping FK members...\n";
+                        try { $table->dropForeign('members_zone_id_foreign'); } catch (\Throwable $e) { echo "Members FK Drop Error: " . $e->getMessage() . "\n"; }
+                        try { $table->dropForeign(['zone_id']); } catch (\Throwable $e) { echo "Members FK Drop Array Error: " . $e->getMessage() . "\n"; }
+
+                        echo "Renaming member column...\n";
+                        $table->renameColumn('zone_id', 'tehsil_id');
+                    }
+                });
+                Schema::table('members', function (Blueprint $table) {
+                     if (Schema::hasColumn('members', 'tehsil_id')) {
+                         echo "Adding FK members...\n";
+                         $table->foreign('tehsil_id')->references('id')->on('tehsils')->onDelete('restrict');
+                     }
+                });
+
+                // Update ENUM
+                echo "Updating Member Enum...\n";
+                // Only if member_level exists
+                if (Schema::hasColumn('members', 'member_level')) {
+                     DB::statement("ALTER TABLE members MODIFY COLUMN member_level ENUM('member', 'tehsil', 'district', 'state') DEFAULT 'member'");
+                     DB::table('members')->where('member_level', 'zone')->update(['member_level' => 'tehsil']);
+                }
+            }
+            
+            // 4. Transfers
+            echo "Step 4: Updating Transfers...\n";
+            if (Schema::hasTable('member_transfers')) {
+                Schema::table('member_transfers', function (Blueprint $table) {
+                    if (Schema::hasColumn('member_transfers', 'from_zone_id')) {
+                        try { $table->dropForeign(['from_zone_id']); } catch (\Throwable $e) {}
+                        try { $table->dropForeign(['to_zone_id']); } catch (\Throwable $e) {}
+
+                        $table->renameColumn('from_zone_id', 'from_tehsil_id');
+                        $table->renameColumn('to_zone_id', 'to_tehsil_id');
+                    }
+                });
+                Schema::table('member_transfers', function (Blueprint $table) {
+                     if (Schema::hasColumn('member_transfers', 'from_tehsil_id')) {
+                         $table->foreign('from_tehsil_id')->references('id')->on('tehsils');
+                         $table->foreign('to_tehsil_id')->references('id')->on('tehsils');
+                     }
+                });
+            }
+
+            // 5. Update Elections
+            echo "Step 5: Updating Elections...\n";
+            if (Schema::hasTable('elections')) {
+                 echo "Updating Elections Enum...\n";
+                 DB::statement("ALTER TABLE elections MODIFY COLUMN level ENUM('state', 'district', 'tehsil')");
+                 DB::table('elections')->where('level', 'zone')->update(['level' => 'tehsil']);
+
+                 DB::statement("ALTER TABLE elections MODIFY COLUMN election_type ENUM('tehsil_president', 'district_president', 'state_president') DEFAULT 'tehsil_president'");
+                 DB::table('elections')->where('election_type', 'zonal_president')->update(['election_type' => 'tehsil_president']);
+            }
+
+            // 6. Update Portfolios
+            echo "Step 6: Updating Portfolios...\n";
+            if (Schema::hasTable('portfolios')) {
+                DB::statement("ALTER TABLE portfolios MODIFY COLUMN level ENUM('state', 'district', 'tehsil')");
+                DB::table('portfolios')->where('level', 'zone')->update(['level' => 'tehsil']);
+                
+                // Update portfolio codes and names
+                $portfolioUpdates = [
+                    ['old_code' => 'ZONE_PRESIDENT', 'new_code' => 'TEHSIL_PRESIDENT', 'new_name' => 'Tehsil President'],
+                    ['old_code' => 'ZONE_VICE_PRESIDENT', 'new_code' => 'TEHSIL_VICE_PRESIDENT', 'new_name' => 'Tehsil Vice President'],
+                    ['old_code' => 'ZONE_SECRETARY', 'new_code' => 'TEHSIL_SECRETARY', 'new_name' => 'Tehsil Secretary'],
+                    ['old_code' => 'ZONE_JOINT_SECRETARY', 'new_code' => 'TEHSIL_JOINT_SECRETARY', 'new_name' => 'Tehsil Joint Secretary'],
+                    ['old_code' => 'ZONE_TREASURER', 'new_code' => 'TEHSIL_TREASURER', 'new_name' => 'Tehsil Treasurer'],
+                    ['old_code' => 'ZONE_EC_COMMISSIONER', 'new_code' => 'TEHSIL_EC_COMMISSIONER', 'new_name' => 'Tehsil Election Commissioner'],
+                    ['old_code' => 'ZONE_EC_ASST', 'new_code' => 'TEHSIL_EC_ASST', 'new_name' => 'Tehsil Asst. Election Commissioner'],
+                    ['old_code' => 'ZONE_EC_OFFICER', 'new_code' => 'TEHSIL_EC_OFFICER', 'new_name' => 'Tehsil Election Officer'],
+                ];
+                foreach ($portfolioUpdates as $update) {
+                    DB::table('portfolios')->where('code', $update['old_code'])->update([
+                        'code' => $update['new_code'],
+                        'name' => $update['new_name']
+                    ]);
+                }
+                // Update descriptions containing "Zonal" to "Tehsil"
+                DB::statement("UPDATE portfolios SET description = REPLACE(description, 'Zonal', 'Tehsil') WHERE level = 'tehsil'");
+                DB::statement("UPDATE portfolios SET description = REPLACE(description, 'Zone', 'Tehsil') WHERE level = 'tehsil'");
+            }
+
+            // 7. Update Leadership Positions
+            echo "Step 7: Updating Leadership Positions...\n";
+            if (Schema::hasTable('leadership_positions')) {
+                DB::statement("ALTER TABLE leadership_positions MODIFY COLUMN level ENUM('state', 'district', 'tehsil')");
+                DB::table('leadership_positions')->where('level', 'zone')->update(['level' => 'tehsil']);
+            }
+
+            // 8. Update Committees
+            echo "Step 8: Updating Committees...\n";
+            if (Schema::hasTable('committees')) {
+                DB::statement("ALTER TABLE committees MODIFY COLUMN level ENUM('state', 'district', 'tehsil')");
+                DB::table('committees')->where('level', 'zone')->update(['level' => 'tehsil']);
+            }
+
+            // 9. Update Election Commissions
+            echo "Step 9: Updating Election Commissions...\n";
+            if (Schema::hasTable('election_commissions')) {
+                if (Schema::hasColumn('election_commissions', 'level')) {
+                    DB::statement("ALTER TABLE election_commissions MODIFY COLUMN level ENUM('state', 'district', 'tehsil')");
+                    DB::table('election_commissions')->where('level', 'zone')->update(['level' => 'tehsil']);
+                }
+            }
+
+            // 10. Update Election Delegates
+            echo "Step 10: Updating Election Delegates...\n";
+            if (Schema::hasTable('election_delegates')) {
+                if (Schema::hasColumn('election_delegates', 'level')) {
+                    DB::statement("ALTER TABLE election_delegates MODIFY COLUMN level ENUM('state', 'district', 'tehsil')");
+                    DB::table('election_delegates')->where('level', 'zone')->update(['level' => 'tehsil']);
+                }
+            }
+
+            // 11. Update Blog Posts
+            echo "Step 11: Updating Blog Posts...\n";
+            if (Schema::hasTable('blog_posts')) {
+                if (Schema::hasColumn('blog_posts', 'level')) {
+                    DB::statement("ALTER TABLE blog_posts MODIFY COLUMN level ENUM('state', 'district', 'tehsil')");
+                    DB::table('blog_posts')->where('level', 'zone')->update(['level' => 'tehsil']);
+                }
+                if (Schema::hasColumn('blog_posts', 'event_scope')) {
+                    DB::statement("ALTER TABLE blog_posts MODIFY COLUMN event_scope ENUM('state', 'district', 'tehsil')");
+                    DB::table('blog_posts')->where('event_scope', 'zone')->update(['event_scope' => 'tehsil']);
+                }
+            }
+
+            // 12. Update User Roles
+            echo "Step 12: Updating User Roles...\n";
+            if (Schema::hasTable('users')) {
+                DB::table('users')->where('role', 'zone_admin')->update(['role' => 'tehsil_admin']);
+                DB::table('users')->where('role', 'zone_president')->update(['role' => 'tehsil_president']);
+                DB::table('users')->where('role', 'zone_member')->update(['role' => 'tehsil_member']);
+            }
+
+            echo "Migration completed successfully!\n";
+        
+        } catch (\Throwable $e) {
+            echo "CRITICAL ERROR: " . $e->getMessage() . "\n";
+            throw $e;
+        } finally {
+             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        }
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+        try {
+            // 1. Reverse User Roles
+            if (Schema::hasTable('users')) {
+                DB::table('users')->where('role', 'tehsil_admin')->update(['role' => 'zone_admin']);
+                DB::table('users')->where('role', 'tehsil_president')->update(['role' => 'zone_president']);
+                DB::table('users')->where('role', 'tehsil_member')->update(['role' => 'zone_member']);
+            }
+
+            // 2. Reverse Blog Posts
+            if (Schema::hasTable('blog_posts')) {
+                if (Schema::hasColumn('blog_posts', 'level')) {
+                    DB::table('blog_posts')->where('level', 'tehsil')->update(['level' => 'zone']);
+                    DB::statement("ALTER TABLE blog_posts MODIFY COLUMN level ENUM('state', 'district', 'zone')");
+                }
+                if (Schema::hasColumn('blog_posts', 'event_scope')) {
+                    DB::table('blog_posts')->where('event_scope', 'tehsil')->update(['event_scope' => 'zone']);
+                    DB::statement("ALTER TABLE blog_posts MODIFY COLUMN event_scope ENUM('state', 'district', 'zone')");
+                }
+            }
+
+            // 3. Reverse Election Delegates
+            if (Schema::hasTable('election_delegates')) {
+                if (Schema::hasColumn('election_delegates', 'level')) {
+                    DB::table('election_delegates')->where('level', 'tehsil')->update(['level' => 'zone']);
+                    DB::statement("ALTER TABLE election_delegates MODIFY COLUMN level ENUM('state', 'district', 'zone')");
+                }
+            }
+
+            // 4. Reverse Election Commissions
+            if (Schema::hasTable('election_commissions')) {
+                if (Schema::hasColumn('election_commissions', 'level')) {
+                    DB::table('election_commissions')->where('level', 'tehsil')->update(['level' => 'zone']);
+                    DB::statement("ALTER TABLE election_commissions MODIFY COLUMN level ENUM('state', 'district', 'zone')");
+                }
+            }
+
+            // 5. Reverse Committees
+            if (Schema::hasTable('committees')) {
+                DB::table('committees')->where('level', 'tehsil')->update(['level' => 'zone']);
+                DB::statement("ALTER TABLE committees MODIFY COLUMN level ENUM('state', 'district', 'zone')");
+            }
+
+            // 6. Reverse Leadership Positions
+            if (Schema::hasTable('leadership_positions')) {
+                DB::table('leadership_positions')->where('level', 'tehsil')->update(['level' => 'zone']);
+                DB::statement("ALTER TABLE leadership_positions MODIFY COLUMN level ENUM('state', 'district', 'zone')");
+            }
+
+            // 7. Reverse Portfolios
+            if (Schema::hasTable('portfolios')) {
+                // Reverse descriptions
+                DB::statement("UPDATE portfolios SET description = REPLACE(description, 'Tehsil', 'Zonal') WHERE level = 'tehsil'");
+                
+                // Reverse portfolio codes and names
+                $portfolioUpdates = [
+                    ['old_code' => 'TEHSIL_PRESIDENT', 'new_code' => 'ZONE_PRESIDENT', 'new_name' => 'Zonal President'],
+                    ['old_code' => 'TEHSIL_VICE_PRESIDENT', 'new_code' => 'ZONE_VICE_PRESIDENT', 'new_name' => 'Zonal Vice President'],
+                    ['old_code' => 'TEHSIL_SECRETARY', 'new_code' => 'ZONE_SECRETARY', 'new_name' => 'Zonal Secretary'],
+                    ['old_code' => 'TEHSIL_JOINT_SECRETARY', 'new_code' => 'ZONE_JOINT_SECRETARY', 'new_name' => 'Zonal Joint Secretary'],
+                    ['old_code' => 'TEHSIL_TREASURER', 'new_code' => 'ZONE_TREASURER', 'new_name' => 'Zonal Treasurer'],
+                    ['old_code' => 'TEHSIL_EC_COMMISSIONER', 'new_code' => 'ZONE_EC_COMMISSIONER', 'new_name' => 'Zonal Election Commissioner'],
+                    ['old_code' => 'TEHSIL_EC_ASST', 'new_code' => 'ZONE_EC_ASST', 'new_name' => 'Zonal Asst. Election Commissioner'],
+                    ['old_code' => 'TEHSIL_EC_OFFICER', 'new_code' => 'ZONE_EC_OFFICER', 'new_name' => 'Zonal Election Officer'],
+                ];
+                foreach ($portfolioUpdates as $update) {
+                    DB::table('portfolios')->where('code', $update['old_code'])->update([
+                        'code' => $update['new_code'],
+                        'name' => $update['new_name']
+                    ]);
+                }
+                
+                DB::table('portfolios')->where('level', 'tehsil')->update(['level' => 'zone']);
+                DB::statement("ALTER TABLE portfolios MODIFY COLUMN level ENUM('state', 'district', 'zone')");
+            }
+
+            // 8. Reverse Elections
+            if (Schema::hasTable('elections')) {
+                 DB::table('elections')->where('election_type', 'tehsil_president')->update(['election_type' => 'zonal_president']);
+                 DB::statement("ALTER TABLE elections MODIFY COLUMN election_type ENUM('zonal_president', 'district_president', 'state_president') DEFAULT 'zonal_president'");
+
+                 DB::table('elections')->where('level', 'tehsil')->update(['level' => 'zone']);
+                 DB::statement("ALTER TABLE elections MODIFY COLUMN level ENUM('state', 'district', 'zone')");
+            }
+
+            // 9. Reverse Member Transfers
+            if (Schema::hasTable('member_transfers')) {
+                Schema::table('member_transfers', function (Blueprint $table) {
+                     $table->dropForeign(['from_tehsil_id']);
+                     $table->dropForeign(['to_tehsil_id']);
+                     $table->renameColumn('from_tehsil_id', 'from_zone_id');
+                     $table->renameColumn('to_tehsil_id', 'to_zone_id');
+                });
+                 Schema::table('member_transfers', function (Blueprint $table) {
+                     $table->foreign('from_zone_id')->references('id')->on('zones');
+                     $table->foreign('to_zone_id')->references('id')->on('zones');
+                });
+            }
+
+            // 10. Reverse Members
+            if (Schema::hasTable('members')) {
+                DB::table('members')->where('member_level', 'tehsil')->update(['member_level' => 'zone']);
+                DB::statement("ALTER TABLE members MODIFY COLUMN member_level ENUM('member', 'zone', 'district', 'state') DEFAULT 'member'");
+                
+                Schema::table('members', function (Blueprint $table) {
+                    $table->dropForeign(['tehsil_id']);
+                    $table->renameColumn('tehsil_id', 'zone_id');
+                });
+                 Schema::table('members', function (Blueprint $table) {
+                    $table->foreign('zone_id')->references('id')->on('zones')->onDelete('restrict');
+                });
+            }
+
+            // 11. Reverse Users
+            if (Schema::hasTable('users')) {
+                 Schema::table('users', function (Blueprint $table) {
+                    $table->dropForeign(['tehsil_id']);
+                    $table->renameColumn('tehsil_id', 'zone_id');
+                });
+                 Schema::table('users', function (Blueprint $table) {
+                    $table->foreign('zone_id')->references('id')->on('zones')->nullOnDelete();
+                });
+            }
+
+            // 12. Rename Table Back
+            if (Schema::hasTable('tehsils')) {
+                Schema::rename('tehsils', 'zones');
+            }
+
+        } finally {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        }
+    }
+};
