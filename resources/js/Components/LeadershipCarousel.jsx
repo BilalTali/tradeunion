@@ -26,18 +26,18 @@ export default function LeadershipCarousel({ messages }) {
     const isLongText = currentMessage.message && currentMessage.message.length > 150;
 
     return (
-        <section className="bg-white py-12 border-b">
+        <section className="bg-white py-8 sm:py-12 border-b">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 md:p-12 shadow-sm border border-blue-100 relative overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 md:p-12 shadow-sm border border-blue-100 relative overflow-hidden">
                     {/* Background decoration */}
                     <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-blue-100 rounded-full opacity-50 blur-xl"></div>
                     <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-indigo-100 rounded-full opacity-50 blur-xl"></div>
 
-                    <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                    <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-center">
                         {/* Photo */}
                         <div className="flex justify-center md:justify-end">
                             <div className="relative">
-                                <div className="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white shadow-lg">
+                                <div className="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white shadow-lg transition-all">
                                     {currentMessage.photo_path ? (
                                         <img
                                             src={`/storage/${currentMessage.photo_path}`}

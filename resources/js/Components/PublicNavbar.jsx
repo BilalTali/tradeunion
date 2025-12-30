@@ -17,19 +17,19 @@ export default function PublicNavbar() {
                                     <img
                                         src={`/storage/${officeProfile.primary_logo_path}`}
                                         alt="Logo"
-                                        className="w-16 h-16 rounded-full object-cover shadow-sm border-2 border-white"
+                                        className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover shadow-sm border-2 border-white transition-all"
                                     />
                                 ) : (
-                                    <div className="w-16 h-16 bg-union-primary rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-sm border-2 border-white">
+                                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-union-primary rounded-full flex items-center justify-center text-white font-bold text-lg sm:text-2xl shadow-sm border-2 border-white transition-all">
                                         {officeProfile?.short_name ? officeProfile.short_name.substring(0, 2).toUpperCase() : 'JK'}
                                     </div>
                                 )}
                             </Link>
-                            <div className="ml-4 hidden sm:flex flex-col justify-center">
-                                <span className="font-black text-3xl text-transparent bg-clip-text bg-gradient-to-r from-red-700 via-red-600 to-amber-600 uppercase tracking-tighter leading-none">
+                            <div className="ml-3 sm:ml-4 flex flex-col justify-center">
+                                <span className="font-black text-2xl sm:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-red-700 via-red-600 to-amber-600 uppercase tracking-tighter leading-none transition-all">
                                     {officeProfile?.short_name || 'JKECC'}
                                 </span>
-                                <span className="text-xs font-bold text-gray-600 uppercase tracking-wide leading-tight mt-0.5">
+                                <span className="text-[10px] sm:text-xs font-bold text-gray-600 uppercase tracking-wide leading-tight mt-0.5 transition-all">
                                     {officeProfile?.organization_name || 'J&K Employees Assoc.'}
                                 </span>
                             </div>
