@@ -26,10 +26,10 @@ export default function PublicNavbar() {
                                 )}
                             </Link>
                             <div className="ml-3 sm:ml-4 flex flex-col justify-center">
-                                <span className="font-black text-2xl sm:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-red-700 via-red-600 to-amber-600 uppercase tracking-tighter leading-none transition-all">
+                                <span className="font-black text-xl sm:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-red-700 via-red-600 to-amber-600 uppercase tracking-tighter leading-none transition-all">
                                     {officeProfile?.short_name || 'JKECC'}
                                 </span>
-                                <span className="text-[10px] sm:text-xs font-bold text-gray-600 uppercase tracking-wide leading-tight mt-0.5 transition-all">
+                                <span className="text-[11px] sm:text-xs font-bold text-gray-600 uppercase tracking-wide leading-tight mt-0.5 transition-all block">
                                     {officeProfile?.organization_name || 'J&K Employees Assoc.'}
                                 </span>
                             </div>
