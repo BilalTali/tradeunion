@@ -29,7 +29,7 @@ export default function PublicNavbar() {
                                 <span className="font-black text-xl sm:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-red-700 via-red-600 to-amber-600 uppercase tracking-tighter leading-none transition-all">
                                     {officeProfile?.short_name || 'JKECC'}
                                 </span>
-                                <span className="text-[11px] sm:text-xs font-bold text-gray-600 uppercase tracking-wide leading-tight mt-0.5 transition-all block">
+                                <span className="text-[9px] sm:text-xs font-bold text-gray-600 uppercase tracking-wide leading-none mt-0.5 transition-all block text-wrap max-w-[140px] sm:max-w-none">
                                     {officeProfile?.organization_name || 'J&K Employees Assoc.'}
                                 </span>
                             </div>
