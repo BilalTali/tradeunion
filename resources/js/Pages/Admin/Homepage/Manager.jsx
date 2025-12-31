@@ -303,6 +303,26 @@ const sectionSchemas = {
             { key: 'description', label: 'Role Description', type: 'textarea' }
         ]
     },
+    footer_global: {
+        type: 'object', // Special type for flat key-value pairs stored in 'content' JSON
+        fields: [
+            { key: 'about_text', label: 'About Text (Footer Column 1)', type: 'textarea' },
+            { key: 'copyright_text', label: 'Copyright Line', type: 'text' },
+            { key: 'facebook_url', label: 'Facebook URL', type: 'text' },
+            { key: 'twitter_url', label: 'Twitter URL', type: 'text' },
+            { key: 'instagram_url', label: 'Instagram URL', type: 'text' },
+            { key: 'youtube_url', label: 'YouTube URL', type: 'text' },
+            { key: 'linkedin_url', label: 'LinkedIn URL', type: 'text' },
+            {
+                key: 'useful_links',
+                label: 'Useful Links (Format: "Label | URL" - one per line)',
+                type: 'textarea',
+                placeholder: 'About Us | /about\nContact | /contact'
+            },
+            { key: 'developed_by', label: 'Developed By (Name)', type: 'text' },
+            { key: 'developed_by_url', label: 'Developed By (Link/Contact)', type: 'text' }
+        ]
+    },
     journey: {
         type: 'list',
         fields: [
@@ -319,17 +339,65 @@ const sectionSchemas = {
             { key: 'description', label: 'Feature Description', type: 'textarea' }
         ]
     },
-    about: { type: 'text' }
+    about: { type: 'text' },
+    contact_intro: { type: 'text' },
+    privacy_policy: {
+        type: 'list',
+        fields: [
+            { key: 'title', label: 'Section Title', type: 'text' },
+            { key: 'content', label: 'Section Content', type: 'textarea' }
+        ]
+    },
+    terms_of_service: {
+        type: 'list',
+        fields: [
+            { key: 'title', label: 'Section Title', type: 'text' },
+            { key: 'content', label: 'Section Content', type: 'textarea' }
+        ]
+    },
+    voice_of_unity: {
+        type: 'list',
+        fields: [
+            { key: 'placeholder_title', label: 'Subtitle (Content Exists)', type: 'text' },
+            { key: 'empty_message', label: 'Message (No Content)', type: 'text' },
+            { key: 'button_text', label: 'Button Text', type: 'text' },
+            { key: 'auth_note', label: 'Auth Requirement Note', type: 'text' }
+        ]
+    },
+    latest_updates: {
+        type: 'list',
+        fields: [
+            { key: 'title', label: 'Update Message', type: 'text' }
+        ]
+    },
+    portal_launch: {
+        type: 'list',
+        has_image: true,
+        fields: [
+            { key: 'chief_guest_name', label: 'Chief Guest Name', type: 'text' },
+            { key: 'guest_designation', label: 'Guest Designation', type: 'text' },
+            { key: 'launch_message', label: 'Launch Success Message', type: 'text' },
+            { key: 'button_text', label: 'Launch Button Text', type: 'text' },
+            { key: 'is_active', label: 'Is Active? (true/false)', type: 'text' }
+        ]
+    }
 };
 
 function SectionsManager({ contents }) {
-    const sectionOrder = ['mission_cards', 'about', 'structure', 'journey', 'features'];
+    const sectionOrder = ['portal_launch', 'latest_updates', 'voice_of_unity', 'contact_intro', 'about', 'mission_cards', 'structure', 'journey', 'features', 'privacy_policy', 'terms_of_service', 'footer_global'];
     const labels = {
+        portal_launch: '🚀 Portal Launch / Grand Opening',
+        footer_global: 'Website Footer (Bottom)',
+        latest_updates: 'Latest Updates (Ticker)',
+        voice_of_unity: 'Voice of Unity (Feedback/Grievance)',
+        contact_intro: 'Contact Page Intro',
         mission_cards: 'Mission & Key Pillars (What We Do)',
         about: 'About The Association',
         structure: 'Organizational Structure',
         journey: 'Membership Journey',
-        features: 'Digital Features'
+        features: 'Digital Features',
+        privacy_policy: 'Privacy Policy',
+        terms_of_service: 'Terms of Service'
     };
 
     return (
@@ -364,26 +432,75 @@ function SectionEditor({ contentKey, label, content }) {
         } catch (e) { return null; }
     };
 
+    // Helper to convert JSON links to Text format for editor
+    const jsonLinksToText = (val) => {
+        try {
+            let links = [];
+            if (typeof val === 'string') {
+                if (val.trim().startsWith('[')) links = JSON.parse(val);
+                else return val; // Already text
+            } else if (Array.isArray(val)) {
+                links = val;
+            } else {
+                return '';
+            }
+
+            return links.map(link => `${link.label} | ${link.url}`).join('\n');
+        } catch (e) {
+            return val; // Return original on error
+        }
+    };
+
+
     const isListSchema = schema.type === 'list';
-    // Default mode: If formatted as array, use visual. Else raw.
-    // If user says "keep text as default", we respect existing format.
-    // Actually, force Visual for known lists IF they parse safely, unless user toggles.
+    const isObjectSchema = schema.type === 'object';
+
+    // Default mode logic...
     const [editorMode, setEditorMode] = useState(() => {
-        if (!isListSchema) return 'raw';
+        if (!isListSchema && !isObjectSchema) return 'raw';
         const parsed = parseList(initialContent);
-        return Array.isArray(parsed) ? 'visual' : 'raw';
+        if (isListSchema && Array.isArray(parsed)) return 'visual';
+        if (isObjectSchema && parsed && typeof parsed === 'object' && !Array.isArray(parsed)) return 'visual';
+        return 'raw';
     });
+
+    // Prepare initial data. For useful_links in footer_global, we might want to pre-convert if it's JSON
+    const getInitialContent = (currentContent) => {
+        let contentVal = ((isListSchema || isObjectSchema) && editorMode === 'visual')
+            ? (parseList(currentContent) || (isListSchema ? [] : {}))
+            : currentContent;
+
+        // SPECIAL CASE: For footer_global, convert useful_links JSON to Text for the textarea
+        if (contentKey === 'footer_global' && contentVal?.useful_links) {
+            const textFormat = jsonLinksToText(contentVal.useful_links);
+            contentVal = { ...contentVal, useful_links: textFormat };
+        }
+
+        return contentVal;
+    }
 
     const { data, setData, post, processing, errors, recentlySuccessful } = useForm({
         title: content.title || '',
         subtitle: content.subtitle || '',
-        content: (isListSchema && editorMode === 'visual') ? (parseList(initialContent) || []) : initialContent,
-        settings: content.settings || { bg_color: '#ffffff' }
+        content: getInitialContent(initialContent),
+        settings: content.settings || { bg_color: '#111827' }, // Default to Dark Gray
+        image: null
     });
 
-    // Sync data.content when switching modes or just handle render logic?
-    // It's tricky to sync string <-> array if syntax is broken.
-    // Let's keep data.content as the SOURCE OF TRUTH.
+    // Sync form data if the prop 'content' changes (e.g. after a refresh or parent update)
+    useEffect(() => {
+        setData(prev => ({
+            ...prev,
+            title: content.title || '',
+            subtitle: content.subtitle || '',
+            content: getInitialContent(content.content), // Use new content from props
+            settings: content.settings || prev.settings || { bg_color: '#111827' },
+        }));
+    }, [content]); // Depend on the content prop object reference
+
+    // Sync data.content...
+    // We don't need to sync back to JSON string for sending because string format is now accepted by backend/frontend logic.
+
     // If visual, it's Array. If raw, it's String.
 
     // Ensure data.content is consistent on init
@@ -391,30 +508,38 @@ function SectionEditor({ contentKey, label, content }) {
         const parsed = parseList(initialContent);
         if (isListSchema && Array.isArray(parsed)) {
             setData('content', parsed);
+        } else if (isObjectSchema && parsed && typeof parsed === 'object') {
+            setData('content', parsed);
         }
     }, []); // Empty dependency array means this runs once on mount
 
     const toggleMode = () => {
         if (editorMode === 'visual') {
             // Switching to Raw: Stringify content
-            setData('content', JSON.stringify(data.content, null, 4));
+            setData(prev => ({ ...prev, content: JSON.stringify(prev.content, null, 4) }));
             setEditorMode('raw');
         } else {
             // Switching to Visual: Parse content
             const parsed = parseList(data.content);
-            if (Array.isArray(parsed)) {
-                setData('content', parsed);
+            if (isListSchema && Array.isArray(parsed)) {
+                setData(prev => ({ ...prev, content: parsed }));
+                setEditorMode('visual');
+            } else if (isObjectSchema && parsed && typeof parsed === 'object') {
+                setData(prev => ({ ...prev, content: parsed }));
                 setEditorMode('visual');
             } else {
-                alert("Current content is not a valid list. Cannot switch to Visual Editor.");
+                alert("Current content is not valid JSON for this schema. Cannot switch to Visual Editor.");
             }
         }
     };
 
     const submit = (e) => {
         e.preventDefault();
+        // If uploading file, force FormData? Inertia handles access to data keys automatically.
+        // We just need to make sure we don't send 'image' if null? Inertia sends null which is fine.
         post(route('state.homepage.content-update', contentKey), {
-            preserveScroll: true
+            preserveScroll: true,
+            forceFormData: true // Ensure file upload works
         });
     };
 
@@ -451,6 +576,25 @@ function SectionEditor({ contentKey, label, content }) {
                                     onChange={e => setData('subtitle', e.target.value)}
                                 />
                             </div>
+
+                            {/* Image Upload (Conditional) */}
+                            {schema.has_image && (
+                                <div className="md:col-span-2 border-t pt-4">
+                                    <InputLabel value="Feature Image / Chief Guest Photo" />
+                                    <div className="flex items-center gap-4 mt-2">
+                                        {content.image_path && (
+                                            <img src={`/storage/${content.image_path}`} alt="Current" className="h-16 w-16 object-cover rounded shadow" />
+                                        )}
+                                        <input
+                                            type="file"
+                                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                                            onChange={e => setData('image', e.target.files[0])}
+                                            accept="image/*"
+                                        />
+                                    </div>
+                                    <p className="text-xs text-gray-400 mt-1">Upload a new image to replace the current one.</p>
+                                </div>
+                            )}
                         </div>
 
                         <div>
@@ -468,8 +612,8 @@ function SectionEditor({ contentKey, label, content }) {
 
                         <div>
                             <div className="flex justify-between items-center mb-1">
-                                <InputLabel value={editorMode === 'visual' ? "List Items" : "Content Text / JSON"} />
-                                {isListSchema && (
+                                <InputLabel value={editorMode === 'visual' ? (isListSchema ? "List Items" : "Details") : "Content Text / JSON"} />
+                                {(isListSchema || isObjectSchema) && (
                                     <button
                                         type="button"
                                         onClick={toggleMode}
@@ -481,11 +625,19 @@ function SectionEditor({ contentKey, label, content }) {
                             </div>
 
                             {editorMode === 'visual' ? (
-                                <DynamicListEditor
-                                    items={Array.isArray(data.content) ? data.content : []}
-                                    onChange={newItems => setData('content', newItems)}
-                                    fields={schema.fields}
-                                />
+                                isListSchema ? (
+                                    <DynamicListEditor
+                                        items={Array.isArray(data.content) ? data.content : []}
+                                        onChange={newItems => setData('content', newItems)}
+                                        fields={schema.fields}
+                                    />
+                                ) : (
+                                    <ObjectEditor
+                                        data={data.content || {}}
+                                        onChange={newObj => setData('content', newObj)}
+                                        fields={schema.fields}
+                                    />
+                                )
                             ) : (
                                 <TextArea
                                     className="w-full h-32 font-mono text-sm"
@@ -573,6 +725,45 @@ function DynamicListEditor({ items, onChange, fields }) {
             >
                 + Add New Item
             </button>
+        </div>
+
+    );
+}
+
+// 5. OBJECT EDITOR (New Helper for flat key-value schemas)
+function ObjectEditor({ data, onChange, fields }) {
+    const handleChange = (key, value) => {
+        const newData = { ...data, [key]: value };
+        onChange(newData);
+    };
+
+    return (
+        <div className="grid grid-cols-1 gap-6 p-4 bg-gray-50 border rounded-lg">
+            {fields.map(field => (
+                <div key={field.key} className="bg-white p-4 rounded shadow-sm border border-gray-100">
+                    <div className="mb-2">
+                        <InputLabel value={field.label} />
+                        {/* Show field key as hint */}
+                        <span className="text-xs font-mono text-gray-400">({field.key})</span>
+                    </div>
+
+                    {field.type === 'textarea' ? (
+                        <TextArea
+                            className="w-full h-24"
+                            value={data[field.key] || ''}
+                            onChange={e => handleChange(field.key, e.target.value)}
+                            placeholder={field.placeholder || ''}
+                        />
+                    ) : (
+                        <TextInput
+                            className="w-full"
+                            value={data[field.key] || ''}
+                            onChange={e => handleChange(field.key, e.target.value)}
+                            placeholder={field.placeholder || ''}
+                        />
+                    )}
+                </div>
+            ))}
         </div>
     );
 }

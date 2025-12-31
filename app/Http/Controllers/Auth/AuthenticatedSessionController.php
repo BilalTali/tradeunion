@@ -68,12 +68,9 @@ class AuthenticatedSessionController extends Controller
         $user->save();
 
         // Send Email
-        try {
-            \Illuminate\Support\Facades\Log::info("Sending OTP to user email: " . $user->email);
-            Mail::to($user->email)->send(new LoginOtpMail($otp));
-        } catch (\Exception $e) {
-            // Log error or handle failure
-        }
+        // Send Email
+        \Illuminate\Support\Facades\Log::info("Sending OTP to user email: " . $user->email);
+        Mail::to($user->email)->send(new LoginOtpMail($otp));
 
         return back()->with('status', 'OTP sent to your email.')->with('otp_required', true)->with('email', $request->email);
     }

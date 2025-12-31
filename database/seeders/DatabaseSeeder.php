@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SuperAdminSeeder::class,
             StateSeeder::class,
+            OfficeProfileSeeder::class, // Added Office Profile Seeder
             DistrictTehsilSeeder::class,
             PortfolioSeeder::class,
             PortfolioPermissionSeeder::class,

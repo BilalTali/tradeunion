@@ -1,7 +1,7 @@
 import PublicNavbar from '@/Components/PublicNavbar';
 import { Head, Link } from '@inertiajs/react';
 
-export default function About() {
+export default function About({ aboutContent }) {
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#FF9933] via-[#ffffff] via-[#ffffff] to-[#138808] relative">
             <PublicNavbar />
@@ -32,18 +32,12 @@ export default function About() {
                 {/* Main Content Container */}
                 <div className="max-w-5xl mx-auto space-y-12">
 
-                    {/* Mission Section */}
+                    {/* Mission Section (Dynamic Content) */}
                     <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 md:p-12 shadow-xl border-t-8 border-[#FF9933] border-b-8 border-[#138808]">
                         <h2 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-[#FF9933] to-[#138808] mb-6 font-serif border-b-2 border-gray-100 pb-4">Our Mission</h2>
                         <div className="space-y-6 text-lg text-gray-800 leading-relaxed font-medium">
-                            <p>
-                                The <span className="text-[#FF9933] font-bold">J&K State Employees Association (JKTU)</span> is committed to representing and protecting the interests
-                                of employees across Jammu & Kashmir. We strive to create a supportive environment where educators
-                                can thrive professionally while maintaining their rights and dignity.
-                            </p>
-                            <p>
-                                Through <span className="text-[#138808] font-bold">democratic processes</span>, transparent governance, and collective action, we ensure that every
-                                employee's voice is heard and their concerns are addressed at all levels—tehsil, district, and state.
+                            <p className="whitespace-pre-line">
+                                {aboutContent?.content || "The J&K State Employees Association (JKTU) is committed to representing and protecting the interests of employees across Jammu & Kashmir. We strive to create a supportive environment where educators can thrive professionally while maintaining their rights and dignity. Through democratic processes, transparent governance, and collective action, we ensure that every employee's voice is heard and their concerns are addressed at all levels—tehsil, district, and state."}
                             </p>
                         </div>
                     </div>

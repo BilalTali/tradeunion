@@ -7,7 +7,7 @@ export default function HomeHeroSlider({ slides, defaultTitle, defaultSubtitle }
     const activeSlides = slides && slides.length > 0 ? slides : [
         {
             image_path: null, // Forces default gradient
-            title: defaultTitle || 'Jammu & Kashmir State Employees Association',
+            title: defaultTitle || 'JKECC',
             subtitle: defaultSubtitle || 'Strengthening Educators. Protecting Rights. Building Unity.'
         }
     ];
@@ -59,8 +59,8 @@ export default function HomeHeroSlider({ slides, defaultTitle, defaultSubtitle }
                     {/* Content */}
                     <div className="absolute inset-0 flex items-center justify-center text-center px-4 z-10">
                         <div className="max-w-5xl mx-auto space-y-8">
-                            <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold tracking-[0.2em] uppercase mb-4 animate-fade-in-up ${slide.image_path ? 'bg-white/10 text-white border border-white/20' : 'bg-orange-100 text-[#FF9933] border border-orange-200'}`}>
-                                Official Portal
+                            <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold tracking-[0.2em] uppercase mb-4 animate-fade-in-up ${slide.image_path ? 'bg-white/10 text-white border border-white/20' : 'bg-orange-70 text-[#FF9933] border border-orange-200'}`}>
+                                JKECC Official Portal
                             </span>
 
                             <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight drop-shadow-sm animate-fade-in-up font-serif ${slide.image_path ? 'text-white' : 'text-[#000080]'}`}>

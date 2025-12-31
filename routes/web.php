@@ -20,19 +20,13 @@ use App\Http\Controllers\SitemapController;
 // Public Routes
 Route::get('/', [\App\Http\Controllers\HomepageController::class, 'index'])->name('homepage');
 
-Route::get('/about', function () {
-    return Inertia::render('Public/About');
-})->name('about');
+Route::get('/about', [\App\Http\Controllers\Public\PageController::class, 'about'])->name('about');
 
 Route::get('/contact', [\App\Http\Controllers\Public\PageController::class, 'contact'])->name('contact');
 
-Route::get('/privacy-policy', function () {
-    return Inertia::render('Public/PrivacyPolicy');
-})->name('privacy-policy');
+Route::get('/privacy-policy', [\App\Http\Controllers\Public\PageController::class, 'privacyPolicy'])->name('privacy-policy');
 
-Route::get('/terms-of-service', function () {
-    return Inertia::render('Public/TermsOfService');
-})->name('terms');
+Route::get('/terms-of-service', [\App\Http\Controllers\Public\PageController::class, 'termsOfService'])->name('terms');
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
@@ -133,8 +127,10 @@ Route::middleware('auth')->group(function () {
         Route::post('elections/{election}/apply-criteria', [\App\Http\Controllers\ElectionEligibilityCriteriaController::class, 'applyCriteria'])->name('state.apply-criteria');
         Route::get('elections/{election}/eligible-members', [\App\Http\Controllers\ElectionEligibilityCriteriaController::class, 'listEligibleMembers'])->name('state.eligible-members');
         
-        // Portfolio Management (read-only, seeded data)
-        Route::resource('portfolios', \App\Http\Controllers\PortfolioController::class)->names('state.portfolios')->only(['index', 'show']);
+        // Portfolio Management (Full CRUD)
+        Route::resource('portfolios', \App\Http\Controllers\Admin\PortfolioController::class)->names('state.portfolios');
+        Route::resource('tehsils', \App\Http\Controllers\Admin\TehsilController::class)->names('state.tehsils');
+        Route::resource('districts', \App\Http\Controllers\Admin\DistrictController::class)->names('state.districts');
         
         // Portfolio Assignments (assign members to portfolios)
         Route::resource('portfolio-assignments', \App\Http\Controllers\PortfolioAssignmentController::class)->names('state.portfolio-assignments')->only(['index', 'create', 'store', 'destroy']);

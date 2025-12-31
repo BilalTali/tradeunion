@@ -18,8 +18,9 @@ export default function AuthenticatedLayout({ user: propsUser, header, children 
     const dropdownRef = useRef(null);
 
     const role = user?.role || 'member';
-    const isAdmin = role.includes('admin') || role.includes('president');
     const isSuperAdmin = role === 'super_admin';
+    const isStateAdmin = role === 'state' || role === 'super_admin';
+    const isAdmin = role.includes('admin') || role.includes('president') || isStateAdmin;
     const isDistrictAdmin = role === 'district_admin' || role === 'district_president';
     const isTehsilAdmin = role === 'tehsil_admin' || role === 'tehsil_president';
     const isMember = role.includes('member') && !role.includes('admin') && !role.includes('president');
@@ -43,7 +44,7 @@ export default function AuthenticatedLayout({ user: propsUser, header, children 
         }
 
         // Fall back to role-based routing
-        if (role === 'super_admin') return 'state';
+        if (role === 'super_admin' || role === 'state') return 'state';
         if (role.includes('district') && !role.includes('member')) return 'district';
         if (role.toLowerCase().includes('tehsil') && !role.includes('member')) return 'tehsil';
         return 'member';
@@ -207,14 +208,23 @@ export default function AuthenticatedLayout({ user: propsUser, header, children 
         if (isAdmin) {
             const orgItems = [];
 
-            // Super Admin Functions
-            if (isSuperAdmin) {
+            // State Admin / Super Admin Functions
+            if (isStateAdmin) {
                 orgItems.push({ name: 'Homepage Manager', href: route('state.homepage.edit'), icon: '🏠' });
+                orgItems.push({ name: 'Achievements', href: route('state.achievements.index'), icon: '🏆' });
                 orgItems.push({ name: 'Manage Grievances', href: route('state.grievances.index'), icon: '💬' });
                 orgItems.push({ name: 'Office Profile / Constitution', href: route('state.office-profile.edit'), icon: '🏢' });
             }
 
             // Common items for all admins
+            // Master Data (State Only usually)
+            if (route().has(`${rolePrefix}.districts.index`)) {
+                orgItems.push({ name: 'Districts', href: route(`${rolePrefix}.districts.index`), icon: '🗺️' });
+            }
+            if (route().has(`${rolePrefix}.tehsils.index`)) {
+                orgItems.push({ name: 'Tehsils', href: route(`${rolePrefix}.tehsils.index`), icon: '📍' });
+            }
+
             if (route().has(`${rolePrefix}.portfolios.index`)) {
                 orgItems.push({ name: 'Portfolios', href: route(`${rolePrefix}.portfolios.index`), icon: '📊' });
             }

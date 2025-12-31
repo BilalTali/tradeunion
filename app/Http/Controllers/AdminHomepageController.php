@@ -65,6 +65,9 @@ class AdminHomepageController extends Controller
             'image' => 'nullable|image|max:2048', // If file upload
         ]);
 
+        \Illuminate\Support\Facades\Log::info('Update Content Request for ' . $key, $request->all());
+        \Illuminate\Support\Facades\Log::info('Validated Data', $validated);
+
         // Handle Image Upload
         if ($request->hasFile('image')) {
             if ($content->image_path) {
@@ -78,6 +81,17 @@ class AdminHomepageController extends Controller
         // So I should json_encode it if it's an array.
         if (isset($validated['content']) && is_array($validated['content'])) {
             $validated['content'] = json_encode($validated['content']);
+        }
+
+        // Remove 'image' from validated data as it's not a DB column
+        unset($validated['image']);
+
+        // Explicitly handle settings serialization if array
+        if (isset($validated['settings']) && is_array($validated['settings'])) {
+            $validated['settings'] = $validated['settings']; // Casts will handle it, but let's be sure.
+            // Actually, if we want to FORCE it:
+            // $content->settings = $validated['settings']; 
+            // array cast handles it locally.
         }
 
         $content->fill($validated);

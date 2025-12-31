@@ -92,6 +92,30 @@ class PageController extends Controller
             'filters' => $request->only(['search'])
         ]);
     }
+
+    public function privacyPolicy()
+    {
+        $content = HomepageContent::where('key', 'privacy_policy')
+            ->where('is_active', true)
+            ->first();
+
+        // Fallback or empty if not found, but we seeded it.
+        return Inertia::render('Public/PrivacyPolicy', [
+            'content' => $content
+        ]);
+    }
+
+    public function termsOfService()
+    {
+        $content = HomepageContent::where('key', 'terms_of_service')
+            ->where('is_active', true)
+            ->first();
+
+        return Inertia::render('Public/TermsOfService', [
+            'content' => $content
+        ]);
+    }
+
     public function contact()
     {
         // 1. Fetch State Office Profile
@@ -103,9 +127,15 @@ class PageController extends Controller
             ->with(['officeProfile', 'tehsils.officeProfile'])
             ->get();
 
+        // 3. Fetch CMS Content
+        $introContent = HomepageContent::where('key', 'contact_intro')
+            ->where('is_active', true)
+            ->first();
+
         return Inertia::render('Public/Contact', [
             'stateProfile' => $stateProfile,
-            'districts' => $districts
+            'districts' => $districts,
+            'introContent' => $introContent
         ]);
     }
 }

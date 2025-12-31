@@ -13,7 +13,9 @@ return new class extends Migration
     public function up(): void
     {
         // Use raw statement to update ENUM definition to include 'tehsil_president'
-        DB::statement("ALTER TABLE elections MODIFY COLUMN election_type ENUM('zonal_president', 'district_president', 'state_president', 'tehsil_president') NOT NULL");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE elections MODIFY COLUMN election_type ENUM('zonal_president', 'district_president', 'state_president', 'tehsil_president') NOT NULL");
+        }
     }
 
     /**

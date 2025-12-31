@@ -2,6 +2,9 @@ import PublicNavbar from '@/Components/PublicNavbar';
 import HomeHeroSlider from '@/Components/HomeHeroSlider';
 import LeadershipCarousel from '@/Components/LeadershipCarousel';
 import AchievementsSection from '@/Components/AchievementsSection';
+import AchievementTicker from '@/Components/AchievementTicker';
+import LaunchCelebration from '@/Components/LaunchCelebration';
+import PublicFooter from '@/Components/PublicFooter';
 import { Head, Link, useForm, usePage, router } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -52,12 +55,35 @@ export default function Homepage({ officeProfile, heroSlides, contents, approved
     const structure = getList('structure');
     const journey = getList('journey');
     const features = getList('features');
+
+
     const missionInfo = getSectionInfo('mission_cards', 'Our Mission & Services', 'Dedicated to the welfare of every state employee');
     const structureInfo = getSectionInfo('structure', 'Organizational Hierarchy', 'A transparent, democratic framework');
     const journeyInfo = getSectionInfo('journey', 'Membership Journey', 'From registration to leadership');
     const featuresInfo = getSectionInfo('features', 'Digital Infrastructure', 'Modernizing union operations');
+
+    // Voice of Unity Config
+    const voiceInfo = getSectionInfo('voice_of_unity', 'The Voice of Unity', 'Join the conversation and make your voice heard.');
+    const voiceList = getList('voice_of_unity');
+    const voiceConfig = voiceList.length > 0 ? voiceList[0] : {};
+
+    // LATEST UPDATES TICKER (From CMS)
+    const tickerUpdates = getList('latest_updates');
+    // If no ticker updates found, fallback to achievements or empty
+    const displayTicker = tickerUpdates.length > 0 ? tickerUpdates : (achievements ? achievements.slice(0, 3) : []);
+
     const aboutInfo = getSectionInfo('about', 'About the Association', '');
     const aboutText = getContent('about');
+
+    // Prepare Footer Configuration (Merge Content + Settings)
+    const footerConfig = (() => {
+        const row = contents?.['footer_global'];
+        if (!row) return {};
+        try {
+            const parsed = typeof row.content === 'string' ? JSON.parse(row.content) : (row.content || {});
+            return { ...parsed, settings: row.settings };
+        } catch (e) { return {}; }
+    })();
 
     return (
         <div className="min-h-screen font-sans text-gray-900" style={{ fontFamily: theme.font }}>
@@ -89,10 +115,16 @@ export default function Homepage({ officeProfile, heroSlides, contents, approved
 
             <PublicNavbar />
 
+            {/* PORTAL LAUNCH CELEBRATION OVERLAY */}
+            <LaunchCelebration config={{ ...contents?.['portal_launch'], ...getSettings('portal_launch') }} />
+
+            {/* UPDATES TICKER */}
+            <AchievementTicker messages={displayTicker} />
+
             {/* HERO SLIDER */}
             <HomeHeroSlider
                 slides={heroSlides}
-                defaultTitle={officeProfile?.organization_name}
+                defaultTitle={officeProfile?.short_name || officeProfile?.organization_name}
                 defaultSubtitle={officeProfile?.tagline}
             />
 
@@ -132,81 +164,147 @@ export default function Homepage({ officeProfile, heroSlides, contents, approved
             </div>
 
             {/* EMPLOYEE VOICES / FEEDBACK SECTION (Moved) */}
-            <section className="py-16 sm:py-20 bg-gradient-to-br from-white to-orange-50/30">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Voice of Unity (Grievances) Section - PREMIUM TRICOLOR DESIGN */}
+            <section className="relative py-24 overflow-hidden">
+                {/* Background Decor */}
+                <div className="absolute inset-0 bg-gradient-to-b from-orange-50/50 via-white to-green-50/50 z-0"></div>
+                <div className="absolute top-0 w-full h-2 bg-gradient-to-r from-[#FF9933] via-white to-[#138808]"></div>
+
+                {/* Floating Elements for Texture */}
+                <div className="absolute top-10 left-10 w-32 h-32 bg-[#FF9933] opacity-5 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute bottom-10 right-10 w-48 h-48 bg-[#138808] opacity-5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    {/* Header */}
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 font-serif">
-                            The Voice of Unity
+                        <span className="inline-block py-1 px-3 rounded-full bg-orange-100 text-[#E65100] text-xs font-bold tracking-widest uppercase mb-4 border border-orange-200 shadow-sm">
+                            Platform for Change
+                        </span>
+                        <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 font-serif tracking-tight">
+                            {voiceInfo.title}
                         </h2>
-                        <div className="h-1 w-24 bg-[#FF9933] mx-auto rounded-full mb-4"></div>
-                        <p className="text-center text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
-                            {approvedFeedbacks.length > 0 ? "Real experiences from our members serving the nation." : "Join the conversation and make your voice heard."}
+
+                        <div className="flex items-center justify-center gap-2 mb-8">
+                            <div className="h-1.5 w-16 bg-[#FF9933] rounded-full"></div>
+                            <div className="h-1.5 w-4 bg-gray-300 rounded-full"></div>
+                            <div className="h-1.5 w-16 bg-[#138808] rounded-full"></div>
+                        </div>
+
+                        <p className="text-center text-gray-600 max-w-2xl mx-auto text-xl leading-relaxed font-light">
+                            {approvedFeedbacks.length > 0
+                                ? (voiceConfig.placeholder_title || "Real experiences from our members serving the nation.")
+                                : voiceInfo.subtitle}
                         </p>
                     </div>
 
+                    {/* Feedback Cards */}
                     {approvedFeedbacks.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
                             {approvedFeedbacks.map((feedback, idx) => (
-                                <div key={idx} className="bg-white p-6 rounded-lg shadow-[0_4px_20px_-5px_rgba(0,0,0,0.1)] hover:shadow-xl transition-all border-t-4 border-[#FF9933] group hover:-translate-y-1 duration-300">
-                                    <div className="flex items-center gap-4 mb-4">
-                                        <div className="w-12 h-12 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF9933] font-bold text-xl group-hover:bg-[#FF9933] group-hover:text-white transition-colors">
-                                            {feedback.user.name.charAt(0)}
+                                <div key={idx} className="bg-white p-8 rounded-2xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.15)] transition-all border border-gray-100 hover:border-[#FF9933]/30 group relative overflow-hidden">
+                                    {/* Card Tricolor Top */}
+                                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#FF9933] via-gray-200 to-[#138808]"></div>
+
+                                    <div className="flex items-center gap-5 mb-6">
+                                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#FF9933] to-[#FF6D00] p-0.5">
+                                            <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-[#E65100] font-bold text-2xl font-serif">
+                                                {feedback.user.name.charAt(0)}
+                                            </div>
                                         </div>
                                         <div>
-                                            <p className="font-bold text-gray-900 font-serif">{feedback.user.name}</p>
-                                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">{new Date(feedback.created_at).toLocaleDateString()}</p>
+                                            <p className="font-bold text-gray-900 font-serif text-lg">{feedback.user.name}</p>
+                                            <p className="text-xs text-gray-500 font-bold uppercase tracking-wider bg-gray-100 px-2 py-0.5 rounded inline-block">
+                                                {new Date(feedback.created_at).toLocaleDateString()}
+                                            </p>
                                         </div>
                                     </div>
-                                    <div className="mb-3">
-                                        <span className="inline-block px-2 py-0.5 text-xs font-bold bg-gray-100 text-gray-600 rounded uppercase tracking-wide mr-2">{feedback.category}</span>
+
+                                    <div className="mb-4">
+                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold leading-4 ${feedback.category === 'Transfer' ? 'bg-blue-100 text-blue-800' :
+                                            feedback.category === 'Pay Related' ? 'bg-green-100 text-green-800' :
+                                                'bg-orange-100 text-orange-800'
+                                            }`}>
+                                            {feedback.category}
+                                        </span>
                                     </div>
-                                    <h4 className="font-bold text-gray-800 mb-2">{feedback.subject}</h4>
-                                    <p className="text-gray-600 italic mb-4 text-sm leading-relaxed">&quot;{feedback.message}&quot;</p>
+
+                                    <h4 className="font-bold text-gray-800 mb-3 text-lg">{feedback.subject}</h4>
+                                    <div className="relative">
+                                        <svg className="absolute -top-2 -left-3 w-8 h-8 text-gray-200 opacity-50 transform -scale-x-100" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21L14.017 18C14.017 16.896 14.914 16 16.017 16H19V14H15.65C13.626 14 12 12.374 12 10.35V4.65C12 2.626 13.626 1 15.65 1H20.35C22.374 1 24 2.626 24 4.65V10.35C24 12.374 22.374 14 20.35 14H20.017C20.017 18.005 17.509 20.342 14.017 21ZM5.017 21L5.017 18C5.017 16.896 5.914 16 7.017 16H10V14H6.65C4.626 14 3 12.374 3 10.35V4.65C3 2.626 4.626 1 6.65 1H11.35C13.374 1 15 2.626 15 4.65V10.35C15 12.374 13.374 14 11.35 14H11.017C11.017 18.005 8.509 20.342 5.017 21Z" /></svg>
+                                        <p className="text-gray-600 italic text-base leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            {feedback.message}
+                                        </p>
+                                    </div>
+
                                     {feedback.admin_response && (
-                                        <div className="pt-4 border-t border-gray-100 bg-green-50/50 -mx-6 px-6 pb-2 mt-4">
-                                            <p className="text-xs font-bold text-[#138808] mb-1 uppercase tracking-wide flex items-center gap-1">
-                                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" /></svg>
-                                                Official Response
-                                            </p>
-                                            <p className="text-sm text-gray-700">{feedback.admin_response}</p>
+                                        <div className="mt-6 pt-5 border-t border-dashed border-[#138808]/20 bg-green-50/30 -mx-8 px-8 pb-4">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <div className="w-6 h-6 rounded-full bg-[#138808] flex items-center justify-center">
+                                                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                                                </div>
+                                                <p className="text-xs font-extrabold text-[#138808] uppercase tracking-wider">
+                                                    Action Taken
+                                                </p>
+                                            </div>
+                                            <p className="text-sm text-gray-800 font-medium pl-8">{feedback.admin_response}</p>
                                         </div>
                                     )}
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-12 mb-8 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-                            <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                            </svg>
-                            <p className="text-gray-500 font-medium">Be the first to share your voice!</p>
+                        <div className="text-center py-16 mb-12 bg-white rounded-3xl border-2 border-dashed border-gray-200 shadow-sm max-w-3xl mx-auto relative overflow-hidden group hover:border-[#FF9933]/50 transition-colors">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-50 rounded-bl-full opacity-50 transition-transform group-hover:scale-110"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-green-50 rounded-tr-full opacity-50 transition-transform group-hover:scale-110"></div>
+
+                            <div className="relative z-10">
+                                <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner ring-4 ring-white">
+                                    <svg className="w-10 h-10 text-gray-400 group-hover:text-[#FF9933] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">No feedbacks shared yet</h3>
+                                <p className="text-gray-500 font-medium">{voiceConfig.empty_message || "Be the first to share your voice!"}</p>
+                            </div>
                         </div>
                     )}
 
-                    <div className="text-center">
-                        <button
-                            onClick={() => {
-                                if (auth.user) {
-                                    setShowFeedbackModal(true);
-                                } else {
-                                    router.visit('/login');
-                                }
-                            }}
-                            className="px-8 py-4 bg-gradient-to-r from-[#138808] to-[#0f6b06] text-white rounded-lg hover:shadow-2xl font-bold text-lg transition-all shadow-lg border-b-4 border-green-900 active:border-0 active:translate-y-1"
-                        >
-                            <svg className="w-5 h-5 inline-block mr-2 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                            Share Your Feedback / Grievance
-                        </button>
-                        {!auth.user && (
-                            <p className="mt-4 text-sm text-gray-500 flex items-center justify-center gap-1">
-                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                                </svg>
-                                Authenticated Members only
-                            </p>
-                        )}
+                    {/* CTA Section - The "We will solve it" focus */}
+                    <div className="text-center max-w-2xl mx-auto">
+                        <div className="bg-gradient-to-r from-[#138808] to-[#0B5C04] p-1 rounded-2xl shadow-2xl transform transition-transform hover:scale-[1.02]">
+                            <div className="bg-white rounded-[13px] px-8 py-10">
+                                <h3 className="text-2xl font-bold text-gray-900 mb-3 font-serif">Have a Grievance? We Will Solve It.</h3>
+                                <p className="text-gray-600 mb-8 max-w-lg mx-auto">
+                                    Your issues are our priority. Submit your grievance securely and we guarantee a response.
+                                </p>
+
+                                <button
+                                    onClick={() => {
+                                        if (auth.user) {
+                                            setShowFeedbackModal(true);
+                                        } else {
+                                            router.visit('/login');
+                                        }
+                                    }}
+                                    className="group relative inline-flex items-center justify-center px-10 py-4 font-bold text-white transition-all duration-200 bg-gradient-to-r from-[#FF9933] to-[#E65100] font-serif rounded-full focus:outline-none hover:shadow-lg hover:shadow-orange-500/30 transform active:scale-95"
+                                >
+                                    <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
+                                    <span className="relative flex items-center gap-3 text-lg">
+                                        {voiceConfig.button_text || "Submit Your Grievance"}
+                                        <svg className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                    </span>
+                                </button>
+
+                                {!auth.user && (
+                                    <div className="mt-6 flex items-center justify-center gap-2 text-sm text-gray-500 bg-gray-50 py-2 px-4 rounded-full inline-block mx-auto">
+                                        <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                                        </svg>
+                                        <span className="font-medium">{voiceConfig.auth_note || "Authenticated Members only"}</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -400,171 +498,119 @@ export default function Homepage({ officeProfile, heroSlides, contents, approved
                 </div>
             </section>
 
-            {/* Footer Area */}
-            <footer className="text-white py-16 border-t-8 border-[#FF9933]" style={{ backgroundColor: '#111827' }}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-12">
-                    {/* Organization Info */}
-                    <div>
-                        <h3 className="text-xl font-bold mb-6 font-serif tracking-wider text-[#FF9933]">{officeProfile?.organization_name}</h3>
 
-                        {/* Dynamic Footer Content */}
-                        <div className="space-y-4">
-                            {/* Line 1: Address */}
-                            <p className="text-gray-400 leading-relaxed font-sans text-sm">
-                                {officeProfile?.footer_line_1 || officeProfile?.full_address || 'Official Trade Union Portal'}
-                            </p>
-
-                            {/* Line 2: Emails */}
-                            <div className="space-y-2 text-gray-400 text-sm">
-                                {officeProfile?.footer_line_2 ? (
-                                    <p className="flex items-center gap-2">
-                                        <svg className="w-4 h-4 text-[#138808]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                        {officeProfile?.footer_line_2}
-                                    </p>
-                                ) : (
-                                    <p className="flex items-center gap-2">
-                                        <svg className="w-4 h-4 text-[#138808]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                        {officeProfile?.primary_email}
-                                    </p>
-                                )}
-
-                                {/* Line 3: Contacts / Reg No */}
-                                {officeProfile?.footer_line_3 ? (
-                                    <p className="flex items-center gap-2">
-                                        <svg className="w-4 h-4 text-[#FF9933]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                                        {officeProfile.footer_line_3}
-                                    </p>
-                                ) : (
-                                    <p className="flex items-center gap-2">
-                                        <svg className="w-4 h-4 text-[#FF9933]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                        Reg No: {officeProfile?.registration_number}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Quick Links */}
-                    <div>
-                        <h3 className="text-xl font-bold mb-6 font-serif tracking-wider text-white">Quick Links</h3>
-                        <ul className="space-y-3 text-gray-400 text-sm">
-                            <li><Link href="/about" className="hover:text-[#FF9933] transition-colors flex items-center gap-2"><span>&rsaquo;</span> About Us</Link></li>
-                            <li><Link href="/contact" className="hover:text-[#FF9933] transition-colors flex items-center gap-2"><span>&rsaquo;</span> Contact</Link></li>
-                            <li><Link href="/login" className="hover:text-[#FF9933] transition-colors flex items-center gap-2"><span>&rsaquo;</span> Member Login</Link></li>
-                            <li><Link href="/privacy-policy" className="hover:text-[#FF9933] transition-colors flex items-center gap-2"><span>&rsaquo;</span> Privacy Policy</Link></li>
-                        </ul>
-                    </div>
-
-                    {/* Social / Other */}
-                    <div>
-                        <h3 className="text-xl font-bold mb-6 font-serif tracking-wider text-white">Connect</h3>
-                        <p className="text-gray-400 text-sm mb-6">Follow us for the latest union updates and notifications.</p>
-                        <div className="flex space-x-4">
-                            {/* Facebook */}
-                            <a href="#" className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-full hover:bg-[#1877F2] hover:text-white transition-all duration-300 border border-white/10">
-                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" /></svg>
-                            </a>
-                            {/* Twitter */}
-                            <a href="#" className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-full hover:bg-black hover:text-white transition-all duration-300 border border-white/10">
-                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M13.6823 10.6218L20.2391 3H18.6854L12.9921 9.61788L8.44486 3H3.2002L10.0765 13.0074L3.2002 21H4.75404L10.7663 14.0113L15.5685 21H20.8131L13.6819 10.6218ZM11.5541 13.0956L10.8574 12.0991L5.31391 4.16971H7.70053L12.1742 10.5689L12.8709 11.5655L18.6861 19.8835H16.2995L11.5541 13.096V13.0956Z" /></svg>
-                            </a>
-                        </div>
-                    </div>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-20">
+                <div className="bg-gradient-to-r from-union-primary to-orange-600 rounded-2xl p-8 md:p-12 text-center text-white shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-full bg-white opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+                    <h2 className="text-3xl font-bold mb-4 relative z-10">Start Your Journey Today</h2>
+                    <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto relative z-10">Join thousands of colleagues making a difference.</p>
+                    <Link
+                        href="/register"
+                        className="inline-block bg-white text-union-primary font-bold px-8 py-3 rounded-full hover:bg-gray-100 transition shadow-lg relative z-10"
+                    >
+                        Become a Member
+                    </Link>
                 </div>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-white/5 text-center text-gray-500 text-sm">
-                    &copy; {new Date().getFullYear()} {officeProfile?.organization_name}. All rights reserved.
-                </div>
-            </footer>
+            </div>
+
+
+            {/* Global Footer */}
+            <PublicFooter
+                officeProfile={officeProfile}
+                content={footerConfig}
+            />
 
             {/* Grievance Submission Modal */}
-            {showFeedbackModal && auth.user && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-                    <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden">
-                        <div className="p-6 border-b border-gray-100 bg-[#138808]">
-                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                <svg className="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                Submit Grievance / Feedback
-                            </h3>
+            {
+                showFeedbackModal && auth.user && (
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+                        <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden">
+                            <div className="p-6 border-b border-gray-100 bg-[#138808]">
+                                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                    <svg className="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                    Submit Grievance / Feedback
+                                </h3>
+                            </div>
+                            <form
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    post(route('grievances.store'), {
+                                        preserveScroll: true,
+                                        onSuccess: () => {
+                                            setShowFeedbackModal(false);
+                                            reset();
+                                        }
+                                    });
+                                }}
+                                className="p-6 space-y-5"
+                            >
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Subject</label>
+                                    <input
+                                        type="text"
+                                        value={data.subject}
+                                        onChange={(e) => setData('subject', e.target.value)}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#138808] focus:border-[#138808] transition-shadow bg-gray-50 focus:bg-white"
+                                        placeholder="Brief subject of your grievance"
+                                        required
+                                    />
+                                    {errors.subject && <p className="mt-1 text-sm text-red-600 font-medium">{errors.subject}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Category</label>
+                                    <select
+                                        value={data.category}
+                                        onChange={(e) => setData('category', e.target.value)}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#138808] focus:border-[#138808] transition-shadow bg-gray-50 focus:bg-white"
+                                    >
+                                        <option value="Other">Other</option>
+                                        <option value="Transfer">Transfer</option>
+                                        <option value="Pay Related">Pay Related</option>
+                                        <option value="Harassment">Harassment</option>
+                                    </select>
+                                    {errors.category && <p className="mt-1 text-sm text-red-600 font-medium">{errors.category}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                                        Your Message
+                                    </label>
+                                    <textarea
+                                        value={data.message}
+                                        onChange={(e) => setData('message', e.target.value)}
+                                        rows={5}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#138808] focus:border-[#138808] transition-shadow bg-gray-50 focus:bg-white resize-none"
+                                        placeholder="Share your thoughts, suggestions, or experiences..."
+                                        required
+                                    />
+                                    {errors.message && (
+                                        <p className="mt-1 text-sm text-red-600 font-medium">{errors.message}</p>
+                                    )}
+                                </div>
+
+                                <div className="flex items-center gap-3 pt-2">
+                                    <button
+                                        type="submit"
+                                        disabled={processing}
+                                        className="flex-1 px-6 py-3 bg-[#138808] text-white rounded-lg hover:bg-green-800 font-semibold transition-all shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
+                                    >
+                                        {processing ? 'Submitting...' : 'Submit Grievance'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => { setShowFeedbackModal(false); reset(); }}
+                                        className="px-6 py-3 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 font-medium transition-all"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                        <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                post(route('grievances.store'), {
-                                    preserveScroll: true,
-                                    onSuccess: () => {
-                                        setShowFeedbackModal(false);
-                                        reset();
-                                    }
-                                });
-                            }}
-                            className="p-6 space-y-5"
-                        >
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Subject</label>
-                                <input
-                                    type="text"
-                                    value={data.subject}
-                                    onChange={(e) => setData('subject', e.target.value)}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#138808] focus:border-[#138808] transition-shadow bg-gray-50 focus:bg-white"
-                                    placeholder="Brief subject of your grievance"
-                                    required
-                                />
-                                {errors.subject && <p className="mt-1 text-sm text-red-600 font-medium">{errors.subject}</p>}
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Category</label>
-                                <select
-                                    value={data.category}
-                                    onChange={(e) => setData('category', e.target.value)}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#138808] focus:border-[#138808] transition-shadow bg-gray-50 focus:bg-white"
-                                >
-                                    <option value="Other">Other</option>
-                                    <option value="Transfer">Transfer</option>
-                                    <option value="Pay Related">Pay Related</option>
-                                    <option value="Harassment">Harassment</option>
-                                </select>
-                                {errors.category && <p className="mt-1 text-sm text-red-600 font-medium">{errors.category}</p>}
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">
-                                    Your Message
-                                </label>
-                                <textarea
-                                    value={data.message}
-                                    onChange={(e) => setData('message', e.target.value)}
-                                    rows={5}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#138808] focus:border-[#138808] transition-shadow bg-gray-50 focus:bg-white resize-none"
-                                    placeholder="Share your thoughts, suggestions, or experiences..."
-                                    required
-                                />
-                                {errors.message && (
-                                    <p className="mt-1 text-sm text-red-600 font-medium">{errors.message}</p>
-                                )}
-                            </div>
-
-                            <div className="flex items-center gap-3 pt-2">
-                                <button
-                                    type="submit"
-                                    disabled={processing}
-                                    className="flex-1 px-6 py-3 bg-[#138808] text-white rounded-lg hover:bg-green-800 font-semibold transition-all shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
-                                >
-                                    {processing ? 'Submitting...' : 'Submit Grievance'}
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => { setShowFeedbackModal(false); reset(); }}
-                                    className="px-6 py-3 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 font-medium transition-all"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }
 

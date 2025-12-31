@@ -4,7 +4,7 @@ import { Link } from '@inertiajs/react';
 
 import { useState } from 'react';
 
-export default function Contact({ stateProfile, districts }) {
+export default function Contact({ stateProfile, districts, introContent }) {
     const [expandedDistrict, setExpandedDistrict] = useState(null);
 
     const toggleDistrict = (id) => {
@@ -38,7 +38,7 @@ export default function Contact({ stateProfile, districts }) {
                         Contact Us
                     </h1>
                     <p className="text-xl md:text-2xl text-gray-800 font-bold max-w-3xl mx-auto bg-white/60 backdrop-blur-sm py-4 rounded-xl shadow-sm border border-white/40">
-                        We're here to help. Reach out to us for any queries or support.
+                        {introContent?.content || "We're here to help. Reach out to us for any queries or support."}
                     </p>
                 </div>
 
