@@ -282,9 +282,14 @@ export default function AuthenticatedLayout({ user: propsUser, header, children 
         // Member-specific links
         if (rolePrefix === 'member') {
             nav.push({
-                name: 'My Attendance',
-                icon: '📋',
                 href: route('member.attendance.index'),
+                type: 'link',
+            });
+
+            nav.push({
+                name: 'Grievances',
+                icon: '💬',
+                href: route('grievances.index'),
                 type: 'link',
             });
         }
