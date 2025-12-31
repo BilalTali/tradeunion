@@ -102,14 +102,23 @@ export default function LaunchCelebration({ config }) {
 
                     </div>
                 ) : (
-                    <div className="space-y-8 animate-pop-in bg-white/90 backdrop-blur-xl p-12 rounded-3xl shadow-2xl border-2 border-orange-100 relative overflow-hidden">
+                    <div className="space-y-4 md:space-y-6 animate-pop-in bg-white/90 backdrop-blur-xl p-6 md:p-10 rounded-3xl shadow-2xl border-2 border-orange-100 relative overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar">
                         {/* Decorative corner ribbons */}
-                        <div className="absolute top-0 left-0 w-32 h-32 -translate-x-16 -translate-y-16 bg-orange-500 rotate-45"></div>
-                        <div className="absolute bottom-0 right-0 w-32 h-32 translate-x-16 translate-y-16 bg-green-600 rotate-45"></div>
+                        <div className="absolute top-0 left-0 w-24 h-24 -translate-x-12 -translate-y-12 bg-orange-500 rotate-45 pointer-events-none"></div>
+                        <div className="absolute bottom-0 right-0 w-24 h-24 translate-x-12 translate-y-12 bg-green-600 rotate-45 pointer-events-none"></div>
+
+                        {/* Close/Skip Button (Top Right) */}
+                        <button
+                            onClick={handleEnter}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors z-20"
+                            title="Close"
+                        >
+                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
 
                         {/* Chief Guest Image */}
                         {imagePath ? (
-                            <div className="mx-auto w-56 h-56 md:w-72 md:h-72 rounded-full p-2 bg-gradient-to-r from-orange-500 via-white to-green-600 shadow-2xl relative mb-8 group hover:scale-105 transition-transform duration-500">
+                            <div className="mx-auto w-32 h-32 md:w-48 md:h-48 rounded-full p-2 bg-gradient-to-r from-orange-500 via-white to-green-600 shadow-xl relative mb-4 group hover:scale-105 transition-transform duration-500">
                                 <div className="w-full h-full rounded-full overflow-hidden border-4 border-white bg-gray-50">
                                     <img
                                         src={`/storage/${imagePath}`}
@@ -121,33 +130,33 @@ export default function LaunchCelebration({ config }) {
                         ) : null}
 
                         <div className="space-y-2">
-                            <h2 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-orange-500 drop-shadow-sm pb-2">
+                            <h2 className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-orange-500 drop-shadow-sm pb-1 leading-tight">
                                 {settings.launch_message || "Congratulations!"}
                             </h2>
                             <div className="flex justify-center gap-2">
-                                <div className="h-2 w-16 bg-orange-500 rounded-full"></div>
-                                <div className="h-2 w-16 bg-gray-300 rounded-full flex justify-center items-center"><div className="w-2 h-2 bg-blue-800 rounded-full"></div></div>
-                                <div className="h-2 w-16 bg-green-600 rounded-full"></div>
+                                <div className="h-1.5 w-12 bg-orange-500 rounded-full"></div>
+                                <div className="h-1.5 w-12 bg-gray-300 rounded-full flex justify-center items-center"><div className="w-1.5 h-1.5 bg-blue-800 rounded-full"></div></div>
+                                <div className="h-1.5 w-12 bg-green-600 rounded-full"></div>
                             </div>
                         </div>
 
-                        <div className="rounded-xl p-4">
+                        <div className="rounded-xl p-2 md:p-4">
                             {settings.chief_guest_name && (
-                                <h3 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
-                                    Inaugurated by <span className="text-blue-900">{settings.chief_guest_name}</span>
+                                <h3 className="text-xl md:text-3xl font-bold text-gray-800 mb-1 leading-tight">
+                                    Inaugurated by <span className="text-blue-900 block md:inline mt-1 md:mt-0">{settings.chief_guest_name}</span>
                                 </h3>
                             )}
                             {settings.guest_designation && (
-                                <p className="text-xl text-green-700 font-semibold tracking-wide uppercase">
+                                <p className="text-sm md:text-lg text-green-700 font-semibold tracking-wide uppercase mt-2">
                                     {settings.guest_designation}
                                 </p>
                             )}
                         </div>
 
-                        <div className="mt-12">
+                        <div className="mt-6 md:mt-8 pb-2">
                             <button
                                 onClick={handleEnter}
-                                className="px-10 py-4 bg-blue-900 text-white font-bold rounded-full hover:bg-blue-800 transition shadow-lg hover:shadow-blue-900/30 text-lg flex items-center gap-2 mx-auto"
+                                className="px-8 py-3 bg-blue-900 text-white font-bold rounded-full hover:bg-blue-800 transition shadow-lg hover:shadow-blue-900/30 text-base md:text-lg flex items-center gap-2 mx-auto"
                             >
                                 <span>Continue to Website</span>
                                 <span>&rarr;</span>
