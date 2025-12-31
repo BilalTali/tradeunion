@@ -102,7 +102,7 @@ export default function LaunchCelebration({ config }) {
 
                     </div>
                 ) : (
-                    <div className="space-y-4 md:space-y-6 animate-pop-in bg-white/90 backdrop-blur-xl p-6 md:p-10 rounded-3xl shadow-2xl border-2 border-orange-100 relative overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar">
+                    <div className="space-y-4 md:space-y-6 animate-pop-in bg-white/90 backdrop-blur-xl p-6 md:p-8 rounded-3xl shadow-2xl border-2 border-orange-100 relative overflow-hidden max-h-[80vh] w-[95vw] md:w-auto md:max-w-3xl overflow-y-auto custom-scrollbar mx-4">
                         {/* Decorative corner ribbons */}
                         <div className="absolute top-0 left-0 w-24 h-24 -translate-x-12 -translate-y-12 bg-orange-500 rotate-45 pointer-events-none"></div>
                         <div className="absolute bottom-0 right-0 w-24 h-24 translate-x-12 translate-y-12 bg-green-600 rotate-45 pointer-events-none"></div>
