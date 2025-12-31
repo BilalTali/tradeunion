@@ -483,7 +483,7 @@ export default function Homepage({ officeProfile, heroSlides, contents, approved
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-8 font-serif">
                         {aboutInfo.title}
                     </h2>
-                    <div className="prose prose-lg mx-auto text-gray-700 leading-relaxed">
+                    <div className="prose prose-lg mx-auto text-gray-700 leading-relaxed text-justify px-4 md:px-0">
                         <p>{aboutText}</p>
                     </div>
 
