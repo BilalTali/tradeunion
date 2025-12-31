@@ -176,7 +176,7 @@ export default function Login({ status, canResetPassword }) {
                 {/* Submit Button */}
                 <div className="pt-2">
                     <PrimaryButton
-                        className="w-full justify-center py-3.5 text-base bg-gradient-to-r from-[#FF9933] via-[#ffffff] to-[#138808] hover:shadow-lg text-gray-800 font-bold border border-gray-200"
+                        className="w-full justify-center py-3.5 text-base bg-gradient-to-r from-[#FF9933] via-[#ffffff] to-[#138808] hover:shadow-lg !text-gray-900 font-extrabold border border-gray-200"
                         disabled={processing}
                         processing={processing}
                     >
