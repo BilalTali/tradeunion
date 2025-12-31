@@ -3,12 +3,13 @@ import HomeHeroSlider from '@/Components/HomeHeroSlider';
 import LeadershipCarousel from '@/Components/LeadershipCarousel';
 import AchievementsSection from '@/Components/AchievementsSection';
 import AchievementTicker from '@/Components/AchievementTicker';
+import FeedbacksSection from '@/Components/FeedbacksSection';
 import LaunchCelebration from '@/Components/LaunchCelebration';
 import PublicFooter from '@/Components/PublicFooter';
 import { Head, Link, useForm, usePage, router } from '@inertiajs/react';
 import { useState } from 'react';
 
-export default function Homepage({ officeProfile, heroSlides, contents, approvedFeedbacks = [], messages, achievements }) {
+export default function Homepage({ officeProfile, heroSlides, contents, feedbacks = [], messages, achievements }) {
     const { auth } = usePage().props;
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -191,67 +192,15 @@ export default function Homepage({ officeProfile, heroSlides, contents, approved
                         </div>
 
                         <p className="text-center text-gray-600 max-w-2xl mx-auto text-xl leading-relaxed font-light">
-                            {approvedFeedbacks.length > 0
+                            {feedbacks.length > 0
                                 ? (voiceConfig.placeholder_title || "Real experiences from our members serving the nation.")
                                 : voiceInfo.subtitle}
                         </p>
                     </div>
 
-                    {/* Feedback Cards */}
-                    {approvedFeedbacks.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-                            {approvedFeedbacks.map((feedback, idx) => (
-                                <div key={idx} className="bg-white p-8 rounded-2xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.15)] transition-all border border-gray-100 hover:border-[#FF9933]/30 group relative overflow-hidden">
-                                    {/* Card Tricolor Top */}
-                                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#FF9933] via-gray-200 to-[#138808]"></div>
-
-                                    <div className="flex items-center gap-5 mb-6">
-                                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#FF9933] to-[#FF6D00] p-0.5">
-                                            <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-[#E65100] font-bold text-2xl font-serif">
-                                                {feedback.user.name.charAt(0)}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-gray-900 font-serif text-lg">{feedback.user.name}</p>
-                                            <p className="text-xs text-gray-500 font-bold uppercase tracking-wider bg-gray-100 px-2 py-0.5 rounded inline-block">
-                                                {new Date(feedback.created_at).toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="mb-4">
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold leading-4 ${feedback.category === 'Transfer' ? 'bg-blue-100 text-blue-800' :
-                                            feedback.category === 'Pay Related' ? 'bg-green-100 text-green-800' :
-                                                'bg-orange-100 text-orange-800'
-                                            }`}>
-                                            {feedback.category}
-                                        </span>
-                                    </div>
-
-                                    <h4 className="font-bold text-gray-800 mb-3 text-lg">{feedback.subject}</h4>
-                                    <div className="relative">
-                                        <svg className="absolute -top-2 -left-3 w-8 h-8 text-gray-200 opacity-50 transform -scale-x-100" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21L14.017 18C14.017 16.896 14.914 16 16.017 16H19V14H15.65C13.626 14 12 12.374 12 10.35V4.65C12 2.626 13.626 1 15.65 1H20.35C22.374 1 24 2.626 24 4.65V10.35C24 12.374 22.374 14 20.35 14H20.017C20.017 18.005 17.509 20.342 14.017 21ZM5.017 21L5.017 18C5.017 16.896 5.914 16 7.017 16H10V14H6.65C4.626 14 3 12.374 3 10.35V4.65C3 2.626 4.626 1 6.65 1H11.35C13.374 1 15 2.626 15 4.65V10.35C15 12.374 13.374 14 11.35 14H11.017C11.017 18.005 8.509 20.342 5.017 21Z" /></svg>
-                                        <p className="text-gray-600 italic text-base leading-relaxed pl-4 border-l-2 border-gray-100">
-                                            {feedback.message}
-                                        </p>
-                                    </div>
-
-                                    {feedback.admin_response && (
-                                        <div className="mt-6 pt-5 border-t border-dashed border-[#138808]/20 bg-green-50/30 -mx-8 px-8 pb-4">
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <div className="w-6 h-6 rounded-full bg-[#138808] flex items-center justify-center">
-                                                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
-                                                </div>
-                                                <p className="text-xs font-extrabold text-[#138808] uppercase tracking-wider">
-                                                    Action Taken
-                                                </p>
-                                            </div>
-                                            <p className="text-sm text-gray-800 font-medium pl-8">{feedback.admin_response}</p>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
+                    {/* Feedbacks Carousel or Empty State */}
+                    {feedbacks && feedbacks.length > 0 ? (
+                        <FeedbacksSection feedbacks={feedbacks} />
                     ) : (
                         <div className="text-center py-16 mb-12 bg-white rounded-3xl border-2 border-dashed border-gray-200 shadow-sm max-w-3xl mx-auto relative overflow-hidden group hover:border-[#FF9933]/50 transition-colors">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-orange-50 rounded-bl-full opacity-50 transition-transform group-hover:scale-110"></div>
@@ -268,6 +217,7 @@ export default function Homepage({ officeProfile, heroSlides, contents, approved
                             </div>
                         </div>
                     )}
+
 
                     {/* CTA Section - The "We will solve it" focus */}
                     <div className="text-center max-w-2xl mx-auto">

@@ -29,10 +29,10 @@ class HomepageController extends Controller
             ->get()
             ->keyBy('key');
 
-        // 4. Fetch Resolved Grievances/Feedback (Teacher Voices)
+        // 4. Fetch Grievances/Feedback (Teacher Voices) - Showing all for demo/UAT
         $feedbacks = \App\Models\Grievance::with('user:id,name', 'responder:id,name')
-            ->where('status', 'resolved')
-            ->whereNotNull('admin_response')
+            // ->where('status', 'resolved')
+            // ->whereNotNull('admin_response')
             ->latest()
             ->take(6)
             ->get();
@@ -51,7 +51,7 @@ class HomepageController extends Controller
             'officeProfile' => $officeProfile,
             'heroSlides' => $heroSlides,
             'contents' => $contents,
-            'approvedFeedbacks' => $feedbacks,
+            'feedbacks' => $feedbacks,
             'messages' => $messages,
             'achievements' => $achievements,
         ]);
