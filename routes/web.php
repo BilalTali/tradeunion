@@ -18,6 +18,7 @@ use App\Http\Controllers\SitemapController;
 
 // Public Routes
 // Public Routes
+// Grievance Routes updated
 Route::get('/', [\App\Http\Controllers\HomepageController::class, 'index'])->name('homepage');
 
 Route::get('/about', [\App\Http\Controllers\Public\PageController::class, 'about'])->name('about');
@@ -520,7 +521,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/elections/{election}/nominate', [\App\Http\Controllers\CandidateController::class, 'store'])->name('elections.nominate');
 
         // Grievance Submission (Authenticated Users)
-        Route::post('/grievances', [\App\Http\Controllers\GrievanceController::class, 'store'])->name('grievances.store');
+        // Grievance Submission (Authenticated Users)
+        Route::resource('grievances', \App\Http\Controllers\GrievanceController::class)->only(['index', 'create', 'store', 'show']);
     });
     
     
