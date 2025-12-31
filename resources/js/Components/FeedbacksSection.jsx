@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export default function FeedbacksSection({ feedbacks = [] }) {
     const [selectedFeedback, setSelectedFeedback] = useState(null);
@@ -76,8 +77,8 @@ export default function FeedbacksSection({ feedbacks = [] }) {
                 ))}
             </div>
 
-            {/* FEEDBACK DETAIL MODAL */}
-            {selectedFeedback && (
+            {/* FEEDBACK DETAIL MODAL - PORTAL TO BODY to escape stacking contexts */}
+            {selectedFeedback && typeof document !== 'undefined' && createPortal(
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedFeedback(null)}></div>
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden animate-fade-in-up">
@@ -138,7 +139,8 @@ export default function FeedbacksSection({ feedbacks = [] }) {
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             <style>{`
