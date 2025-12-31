@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { Head, useForm, usePage, router } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function Index({ grievances }) {
@@ -37,7 +37,7 @@ export default function Index({ grievances }) {
 
     const handleDelete = (id) => {
         if (confirm('Are you sure you want to delete this grievance?')) {
-            useForm().delete(route('state.grievances.destroy', id), {
+            router.delete(route('state.grievances.destroy', id), {
                 preserveScroll: true
             });
         }
