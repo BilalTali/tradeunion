@@ -25,7 +25,7 @@ class OfficeProfileSeeder extends Seeder
                     'entity_id' => $jkState->id,
                 ],
                 [
-                    'organization_name' => 'Jammu & Kashmir Employees Coordination Committee',
+                    'organization_name' => 'JAMMU AND KASHMIR EMPLOYEES COORDINATION COMMITTEE',
                     'short_name' => 'JKECC',
                     'level' => 'state',
                     'tagline' => 'Voice of the Employees',
