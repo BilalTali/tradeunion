@@ -16,8 +16,8 @@ export default function SEO({
     modifiedTime,
     schema,
 }) {
-    const fullTitle = title ? `${title} | Teachers Union Portal` : 'Jammu & Kashmir State Employees Association - Teachers Union Portal';
-    const defaultDescription = 'Official portal for Jammu & Kashmir State Employees Association. Empowering teachers through democratic representation, member services, and advocacy.';
+    const fullTitle = title ? `${title} | JKECC` : 'JKECC - Jammu and Kashmir Employees Coordination Committee';
+    const defaultDescription = 'Official portal for Jammu and Kashmir Employees Coordination Committee. Empowering employees through democratic representation, member services, and advocacy.';
     const finalDescription = description || defaultDescription;
     const defaultImage = url ? `${url}/images/og-image.jpg` : '/images/og-image.jpg';
     const finalImage = image || defaultImage;
@@ -27,7 +27,7 @@ export default function SEO({
     const defaultSchema = {
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "Jammu & Kashmir State Employees Association",
+        "name": "Jammu and Kashmir Employees Coordination Committee",
         "url": canonicalUrl,
         "logo": `${url}/images/logo.png`,
         "description": finalDescription,
@@ -61,7 +61,7 @@ export default function SEO({
             <meta property="og:title" content={fullTitle} />
             <meta property="og:description" content={finalDescription} />
             <meta property="og:image" content={finalImage} />
-            <meta property="og:site_name" content="Teachers Union Portal" />
+            <meta property="og:site_name" content="JKECC" />
             <meta property="og:locale" content="en_IN" />
 
             {/* Article specific OG tags */}

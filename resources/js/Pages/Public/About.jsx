@@ -6,8 +6,8 @@ export default function About({ aboutContent }) {
         <div className="min-h-screen bg-gradient-to-b from-[#FF9933] via-[#ffffff] via-[#ffffff] to-[#138808] relative">
             <PublicNavbar />
             <Head>
-                <title>About Us - J&K State Employees Association</title>
-                <meta name="description" content="Learn about the Jammu & Kashmir State Employees Association, our mission, values, and commitment to empowering educators across the state." />
+                <title>About Us - JKECC</title>
+                <meta name="description" content="Learn about the Jammu and Kashmir Employees Coordination Committee (JKECC), our mission, values, and commitment to empowering educators across the state." />
             </Head>
 
             {/* Ashoka Chakra Watermark - Centered Fixed */}
@@ -22,10 +22,10 @@ export default function About({ aboutContent }) {
                 {/* Hero Header */}
                 <div className="max-w-5xl mx-auto text-center mb-16">
                     <h1 className="text-4xl md:text-6xl font-extrabold mb-6 text-white drop-shadow-md font-serif tracking-wide">
-                        About JKTU
+                        About JKECC
                     </h1>
-                    <p className="text-xl md:text-2xl text-[#000080] font-bold max-w-3xl mx-auto uppercase tracking-wider bg-white/60 backdrop-blur-sm py-4 rounded-xl shadow-sm border border-white/40">
-                        Jammu & Kashmir State Employees Association
+                    <p className="text-xl md:text-2xl text-[#000080] font-bold max-w-4xl mx-auto uppercase tracking-wider bg-white/60 backdrop-blur-sm py-4 rounded-xl shadow-sm border border-white/40 px-4">
+                        JAMMU AND KASHMIR EMPLOYEES COORDINATION COMMITTEE
                     </p>
                 </div>
 
@@ -37,7 +37,7 @@ export default function About({ aboutContent }) {
                         <h2 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-[#FF9933] to-[#138808] mb-6 font-serif border-b-2 border-gray-100 pb-4">Our Mission</h2>
                         <div className="space-y-6 text-lg text-gray-800 leading-relaxed font-medium">
                             <p className="whitespace-pre-line">
-                                {aboutContent?.content || "The J&K State Employees Association (JKTU) is committed to representing and protecting the interests of employees across Jammu & Kashmir. We strive to create a supportive environment where educators can thrive professionally while maintaining their rights and dignity. Through democratic processes, transparent governance, and collective action, we ensure that every employee's voice is heard and their concerns are addressed at all levels—tehsil, district, and state."}
+                                {aboutContent?.content || "The Jammu and Kashmir Employees Coordination Committee (JKECC) is committed to representing and protecting the interests of employees across Jammu & Kashmir. We strive to create a supportive environment where educators can thrive professionally while maintaining their rights and dignity. Through democratic processes, transparent governance, and collective action, we ensure that every employee's voice is heard and their concerns are addressed at all levels—tehsil, district, and state."}
                             </p>
                         </div>
                     </div>

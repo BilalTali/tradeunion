@@ -28,7 +28,7 @@ class HomepageContentSeeder extends Seeder
         $privacyPolicy = [
             [
                 'title' => '1. Introduction',
-                'content' => 'The Jammu & Kashmir State Employees Association ("JKTU", "we", "us", or "our") is committed to protecting the privacy and security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our portal. By accessing or using the JKTU portal, you agree to the terms of this Privacy Policy. If you do not agree with our policies and practices, please do not use our services.'
+                'content' => 'The Jammu and Kashmir Employees Coordination Committee ("JKECC", "we", "us", or "our") is committed to protecting the privacy and security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our portal. By accessing or using the JKECC portal, you agree to the terms of this Privacy Policy. If you do not agree with our policies and practices, please do not use our services.'
             ],
             [
                 'title' => '2. Information We Collect',
@@ -37,7 +37,7 @@ class HomepageContentSeeder extends Seeder
             // ... (I will include a summarized version or the full text for simplicity)
             [
                 'title' => '11. Contact Us',
-                'content' => "If you have questions, concerns, or complaints about this Privacy Policy or our data practices, please contact us at privacy@jktu.gov.in."
+                'content' => "If you have questions, concerns, or complaints about this Privacy Policy or our data practices, please contact us at privacy@jkecc.gov.in."
             ]
         ];
         
@@ -56,15 +56,15 @@ class HomepageContentSeeder extends Seeder
         $terms = [
             [
                 'title' => '1. Acceptance of Terms',
-                'content' => 'By accessing and using the Jammu & Kashmir State Employees Association ("JKTU") portal, you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.'
+                'content' => 'By accessing and using the Jammu and Kashmir Employees Coordination Committee ("JKECC") portal, you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.'
             ],
             [
                 'title' => '2. Eligibility and Membership',
-                'content' => 'The JKTU portal is intended for active and approved members of JKTU, authorized union officials, and election commissioners. You must be at least 18 years of age.'
+                'content' => 'The JKECC portal is intended for active and approved members of JKECC, authorized union officials, and election commissioners. You must be at least 18 years of age.'
             ],
              [
                 'title' => '11. Contact Information',
-                'content' => 'For questions about these Terms of Service, please contact us at legal@jktu.gov.in.'
+                'content' => 'For questions about these Terms of Service, please contact us at legal@jkecc.gov.in.'
             ]
         ];
 
@@ -151,8 +151,8 @@ class HomepageContentSeeder extends Seeder
                 'title' => 'Global Footer',
                 'subtitle' => 'Site-wide Footer Settings',
                 'content' => json_encode([
-                    'about_text' => 'Serving the teachers and employees of Jammu & Kashmir with dedication and integrity.',
-                    'copyright_text' => '© ' . date('Y') . ' J&K Teachers Union. All rights reserved.',
+                    'about_text' => 'Serving the employees of Jammu & Kashmir with dedication and integrity.',
+                    'copyright_text' => '© ' . date('Y') . ' JKECC. All rights reserved.',
                     'facebook_url' => 'https://facebook.com',
                     'twitter_url' => 'https://twitter.com',
                     'instagram_url' => 'https://instagram.com',
