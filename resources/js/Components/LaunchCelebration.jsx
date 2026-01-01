@@ -84,7 +84,7 @@ export default function LaunchCelebration({ config }) {
                         </div>
 
                         <p className="text-xl md:text-2xl text-gray-600 font-medium">
-                            The new portal is ready for the world.
+                            The new JKEC portal is production-ready for Jammu Kashmir teachers.
                         </p>
 
                         <button

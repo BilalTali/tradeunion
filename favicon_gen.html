@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f0f0f0;
+            font-family: 'Inter', sans-serif;
+            gap: 20px;
+        }
+
+        .canvas-container {
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            color: #444;
+        }
+
+        button:hover {
+            background: #f9fafb;
+            border-color: #ccc;
+        }
+
+        button.active {
+            background: #138808;
+            color: white;
+            border-color: #138808;
+        }
+
+        .download-btn {
+            background: #FF9933;
+            color: white;
+            border-color: #e68a2e;
+        }
+
+        .download-btn:hover {
+            background: #e68a2e;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="canvas-container">
+        <canvas id="cvs" width="512" height="512"></canvas>
+    </div>
+
+    <div class="controls">
+        <button onclick="setStyle('text')" id="btn-text" class="active">Tricolor Text</button>
+        <button onclick="setStyle('tile')" id="btn-tile">Square Tile (White)</button>
+        <button onclick="setStyle('filled')" id="btn-filled">Tricolor Filled</button>
+    </div>
+
+    <div class="controls">
+        <button onclick="downloadFavicon()" class="download-btn">Download icon-512.png</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('cvs');
+        const ctx = canvas.getContext('2d');
+        let currentStyle = 'text';
+
+        function setStyle(style) {
+            currentStyle = style;
+            document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            if (document.getElementById('btn-' + style)) document.getElementById('btn-' + style).classList.add('active');
+            render();
+        }
+
+        function render() {
+            // Clear
+            ctx.clearRect(0, 0, 512, 512);
+
+            const cx = 256;
+            const cy = 256;
+            const text = "JKECC";
+
+            if (currentStyle === 'text') {
+                // 1. Tricolor Text on White
+                ctx.fillStyle = "white";
+                ctx.fillRect(0, 0, 512, 512);
+
+                // Draw Text
+                drawTricolorText(cx, cy, 150);
+            }
+            else if (currentStyle === 'tile') {
+                // 2. Square White Tile with Border
+                // Background
+                ctx.fillStyle = "white";
+                ctx.fillRect(0, 0, 512, 512);
+
+                // Border (Tricolor Gradient)
+                const borderW = 32;
+                const grad = ctx.createLinearGradient(0, 0, 0, 512);
+                grad.addColorStop(0, "#FF9933");
+                grad.addColorStop(0.5, "#ffffff");
+                grad.addColorStop(1, "#138808");
+
+                ctx.lineWidth = borderW;
+                ctx.strokeStyle = grad;
+                ctx.strokeRect(borderW / 2, borderW / 2, 512 - borderW, 512 - borderW);
+
+                // Huge Text
+                drawTricolorText(cx, cy, 130);
+            }
+            else if (currentStyle === 'filled') {
+                // 3. Tricolor Background, White Text
+                const g = ctx.createLinearGradient(0, 0, 0, 512);
+                g.addColorStop(0, "#FF9933");
+                g.addColorStop(0.33, "#FF9933");
+                g.addColorStop(0.33, "#ffffff");
+                g.addColorStop(0.66, "#ffffff");
+                g.addColorStop(0.66, "#138808");
+                g.addColorStop(1, "#138808");
+
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, 512, 512);
+
+                // Text (Navy with White Outline)
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.font = "900 140px Arial, sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+
+                // Shadow
+                ctx.fillStyle = "rgba(0,0,0,0.3)";
+                ctx.fillText(text, 10, 10);
+
+                // Main Text (Navy for contrast on white strip)
+                ctx.fillStyle = "#1F2937";
+                ctx.fillText(text, 0, 0);
+
+                // White Stroke
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = "white";
+                ctx.strokeText(text, 0, 0);
+
+                ctx.restore();
+            }
+        }
+
+        function drawTricolorText(x, y, fontSize) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.font = `900 ${fontSize}px Arial, sans-serif`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            // 3D Depth
+            const depth = 20;
+            for (let i = depth; i > 0; i--) {
+                ctx.save();
+                ctx.translate(-i, i);
+                ctx.fillStyle = "#e0e0e0";
+                ctx.fillText("JKECC", 0, 0);
+                ctx.restore();
+            }
+
+            // Gradient Text
+            const gradient = ctx.createLinearGradient(0, -fontSize / 2, 0, fontSize / 2);
+            gradient.addColorStop(0, "#FF9933");
+            gradient.addColorStop(0.35, "#FF9933");
+            gradient.addColorStop(0.35, "#F0F0F0"); // Darker white for visibility
+            gradient.addColorStop(0.65, "#F0F0F0");
+            gradient.addColorStop(0.65, "#138808");
+            gradient.addColorStop(1, "#138808");
+
+            ctx.fillStyle = gradient;
+            ctx.fillText("JKECC", 0, 0);
+
+            // Outline
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#333";
+            ctx.strokeText("JKECC", 0, 0);
+
+            ctx.restore();
+        }
+
+        function downloadFavicon() {
+            const link = document.createElement('a');
+            link.download = 'icon-512.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Init
+        render();
+    </script>
+</body>
+
+</html>

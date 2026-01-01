@@ -111,7 +111,7 @@ export default function Homepage({ officeProfile, heroSlides, contents, feedback
                     .text-navy { color: var(--color-navy); }
                     .text-green { color: var(--color-green); }
                 `}</style>
-                <title>{officeProfile?.organization_name || 'J&K State Employees Association'}</title>
+                <title>{officeProfile?.organization_name || 'JKECC'}</title>
             </Head>
 
             <PublicNavbar />

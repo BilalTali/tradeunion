@@ -1,7 +1,7 @@
 {
-    "name": "Teachers Union Portal",
-    "short_name": "Union Portal",
-    "description": "Jammu and Kashmir State Employees Association - Teachers' Union Management Portal",
+    "name": "JKECC",
+    "short_name": "JKECC",
+    "description": "Jammu and Kashmir Employees Coordination Committee",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
