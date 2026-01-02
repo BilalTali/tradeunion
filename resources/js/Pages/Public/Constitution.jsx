@@ -7,8 +7,8 @@ export default function Constitution({ constitutionPath, lastUpdated }) {
         <div className="bg-gray-50 min-h-screen">
             <PublicNavbar />
             <Head>
-                <title>Constitution - J&K State Employees Association</title>
-                <meta name="description" content="View and download the Constitution of J&K State Employees Association." />
+                <title>Constitution - JKECC</title>
+                <meta name="description" content="View and download the Constitution of Jammu and Kashmir Employees Coordination Committee." />
                 <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
                 <style>{`
                     :root {

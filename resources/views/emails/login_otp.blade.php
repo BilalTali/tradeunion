@@ -14,7 +14,7 @@
         <p>This OTP is valid for 10 minutes. Do not share this code with anyone.</p>
         <p>If you did not request this login, please contact support immediately.</p>
         <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-        <p style="font-size: 12px; color: #777; text-align: center;">Teachers Union Portal</p>
+        <p style="font-size: 12px; color: #777; text-align: center;">JKECC Portal</p>
     </div>
 </body>
 </html>

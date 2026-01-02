@@ -19,8 +19,8 @@ export default function Contact({ stateProfile, districts, introContent }) {
         <div className="min-h-screen bg-gradient-to-b from-[#FF9933] via-[#ffffff] via-[#ffffff] to-[#138808] relative">
             <PublicNavbar />
             <Head>
-                <title>Contact Us - J&K State Employees Association</title>
-                <meta name="description" content="Get in touch with JKTU. Contact information for state, district, and tehsil offices across Jammu & Kashmir." />
+                <title>Contact Us - JKECC</title>
+                <meta name="description" content="Get in touch with JKECC. Contact information for state, district, and tehsil offices across Jammu & Kashmir." />
             </Head>
 
             {/* Ashoka Chakra Watermark - Centered Fixed */}
@@ -52,7 +52,7 @@ export default function Contact({ stateProfile, districts, introContent }) {
                                 title={stateProfile?.organization_name || "State Office"}
                                 level="J&K State Central Office"
                                 address={stateProfile?.full_address || "Address to be updated"}
-                                email={stateProfile?.primary_email || "state@jktu.gov.in"}
+                                email={stateProfile?.primary_email || "state@jkecc.org"}
                                 phone={stateProfile?.contact_numbers?.[0] || "Phone to be updated"}
                                 icon={StateIcon}
                             />

@@ -7,8 +7,8 @@ export default function PrivacyPolicy({ content }) {
         <div className="bg-gray-50 min-h-screen">
             <PublicNavbar />
             <Head>
-                <title>Privacy Policy - J&K State Employees Association</title>
-                <meta name="description" content="Privacy policy for JKTU portal. Learn how we collect, use, and protect your personal information." />
+                <title>Privacy Policy - JKECC</title>
+                <meta name="description" content="Privacy policy for JKECC portal. Learn how we collect, use, and protect your personal information." />
                 <meta name="robots" content="index, follow" />
             </Head>
 

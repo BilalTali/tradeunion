@@ -114,7 +114,7 @@ export default function GuestLayout({ children }) {
 
                     {/* Footer Help Text */}
                     <div className="mt-8 text-center text-sm text-gray-500 font-medium">
-                        <p>&copy; {new Date().getFullYear()} {officeProfile?.organization_name || 'Teachers Union'}.</p>
+                        <p>&copy; {new Date().getFullYear()} {officeProfile?.organization_name || 'JKECC'}.</p>
                     </div>
                 </div>
             </div>

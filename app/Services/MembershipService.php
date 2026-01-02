@@ -9,7 +9,7 @@ class MembershipService
 {
     /**
      * Generate unique membership ID
-     * Format: JKTU-DIST-TEHSIL-2024-0001
+     * Format: JKECC-DIST-TEHSIL-2024-0001
      */
     /**
      * Generate unique membership ID

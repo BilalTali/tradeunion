@@ -7,8 +7,8 @@ export default function TermsOfService({ content }) {
         <div className="bg-gray-50 min-h-screen">
             <PublicNavbar />
             <Head>
-                <title>Terms of Service - J&K State Employees Association</title>
-                <meta name="description" content="Terms and conditions for using the JKTU portal. Please read carefully before accessing our services." />
+                <title>Terms of Service - JKECC</title>
+                <meta name="description" content="Terms and conditions for using the JKECC portal. Please read carefully before accessing our services." />
                 <meta name="robots" content="index, follow" />
             </Head>
 

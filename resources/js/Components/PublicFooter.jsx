@@ -3,7 +3,7 @@ import { Link } from '@inertiajs/react';
 export default function PublicFooter({ officeProfile, content, theme }) {
     // Content comes from CMS (text and JSON fields)
     const aboutText = content?.about_text || "Serving the teachers and employees of Jammu & Kashmir with dedication and integrity.";
-    const copyrightText = content?.copyright_text || `\u00A9 ${new Date().getFullYear()} ${officeProfile?.organization_name || 'J&K Teachers Union'}. All rights reserved.`;
+    const copyrightText = content?.copyright_text || `\u00A9 ${new Date().getFullYear()} ${officeProfile?.organization_name || 'JKECC'}. All rights reserved.`;
 
     // Parse links: Try JSON first, then fall back to "Label | URL" text format
     let helpfulLinks = [];

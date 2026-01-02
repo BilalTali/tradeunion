@@ -30,7 +30,7 @@ export default function PublicNavbar() {
                                     {officeProfile?.short_name || 'JKECC'}
                                 </span>
                                 <span className="text-[9px] sm:text-xs font-bold text-gray-600 uppercase tracking-wide leading-none mt-0.5 transition-all block text-wrap max-w-[140px] sm:max-w-none">
-                                    {officeProfile?.tagline || 'State Employees Association'}
+                                    {officeProfile?.tagline || 'Jammu and Kashmir Employees Coordination Committee'}
                                 </span>
                             </div>
                         </div>

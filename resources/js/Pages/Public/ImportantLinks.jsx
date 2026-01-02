@@ -23,7 +23,7 @@ export default function ImportantLinks({ links, filters }) {
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#FF9933] via-[#ffffff] via-[#ffffff] to-[#138808] relative font-sans">
             <PublicNavbar />
-            <Head title="Important Government Links - JKTU" />
+            <Head title="Important Government Links - JKECC" />
 
             {/* Ashoka Chakra Watermark */}
             <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none z-0">

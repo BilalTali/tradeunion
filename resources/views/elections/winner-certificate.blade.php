@@ -242,7 +242,7 @@
         
         <div class="certificate-content">
             <div class="certificate-header">
-                <div class="certificate-title">{{ config('app.name', 'Teachers Union') }}</div>
+                <div class="certificate-title">{{ config('app.name', 'JKECC') }}</div>
                 <div class="certificate-subtitle">Certificate of Election</div>
             </div>
             
