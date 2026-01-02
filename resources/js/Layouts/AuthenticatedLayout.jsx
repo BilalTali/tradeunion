@@ -188,8 +188,36 @@ export default function AuthenticatedLayout({ user: propsUser, header, children 
             }
         }
 
-        // Posts (renamed from More) - Blog, Events, Announcements
-        if (isAdmin) {
+        // Content & CMS - For State Admins (includes Settings)
+        if (isStateAdmin) {
+            const cmsItems = [
+                { name: 'Homepage Manager', href: route('state.homepage.edit'), icon: '🏠' },
+                { name: 'Blog Posts', href: route(`${rolePrefix}.blog.index`), icon: '📝' },
+                { name: 'Events', href: route(`${rolePrefix}.blog.index`, { category: 'event' }), icon: '📅' },
+                { name: 'Announcements', href: route(`${rolePrefix}.blog.index`, { category: 'notice' }), icon: '📢' },
+                '---',
+                { name: 'Achievements', href: route('state.achievements.index'), icon: '🏆' },
+                { name: 'Govt Orders', href: route('state.govt-orders.index'), icon: '📜' },
+                { name: 'Academic Calendar', href: route('state.calendars.index'), icon: '📅' },
+                { name: 'Important Links', href: route('state.links.index'), icon: '🔗' },
+                '---',
+                { name: 'My Profile', href: route(isECPortfolio ? 'member.profile.edit' : `${rolePrefix}.profile.edit`), icon: '👤' },
+                { name: 'Office Profile & Constitution', href: route('state.office-profile.edit'), icon: '🏢' },
+            ];
+
+            if (route().has(`${rolePrefix}.theme.edit`)) {
+                cmsItems.push({ name: 'Theme Settings', href: route(`${rolePrefix}.theme.edit`), icon: '🎨' });
+            }
+            cmsItems.push({ name: 'Grievance Management', href: route('state.grievances.index'), icon: '💬' });
+
+            nav.push({
+                name: 'Content & CMS',
+                icon: '📝',
+                type: 'dropdown',
+                items: cmsItems,
+            });
+        } else if (isAdmin) {
+            // For other admins, just show Posts
             const postItems = [
                 { name: 'Blog Posts', href: route(`${rolePrefix}.blog.index`), icon: '📝' },
                 { name: 'Events', href: route(`${rolePrefix}.blog.index`, { category: 'event' }), icon: '📅' },
@@ -204,20 +232,11 @@ export default function AuthenticatedLayout({ user: propsUser, header, children 
             });
         }
 
-        // Organization - Enhanced with Admin Functions
+        // Organization - Restructured (Organizational Structure Only)
         if (isAdmin) {
             const orgItems = [];
 
-            // State Admin / Super Admin Functions
-            if (isStateAdmin) {
-                orgItems.push({ name: 'Homepage Manager', href: route('state.homepage.edit'), icon: '🏠' });
-                orgItems.push({ name: 'Achievements', href: route('state.achievements.index'), icon: '🏆' });
-                orgItems.push({ name: 'Manage Grievances', href: route('state.grievances.index'), icon: '💬' });
-                orgItems.push({ name: 'Office Profile / Constitution', href: route('state.office-profile.edit'), icon: '🏢' });
-            }
-
-            // Common items for all admins
-            // Master Data (State Only usually)
+            // Hierarchical Structure
             if (route().has(`${rolePrefix}.districts.index`)) {
                 orgItems.push({ name: 'Districts', href: route(`${rolePrefix}.districts.index`), icon: '🗺️' });
             }
@@ -225,6 +244,12 @@ export default function AuthenticatedLayout({ user: propsUser, header, children 
                 orgItems.push({ name: 'Tehsils', href: route(`${rolePrefix}.tehsils.index`), icon: '📍' });
             }
 
+            // Add separator if we have structure items
+            if (orgItems.length > 0) {
+                orgItems.push('---');
+            }
+
+            // Portfolio Management
             if (route().has(`${rolePrefix}.portfolios.index`)) {
                 orgItems.push({ name: 'Portfolios', href: route(`${rolePrefix}.portfolios.index`), icon: '📊' });
             }
@@ -232,7 +257,12 @@ export default function AuthenticatedLayout({ user: propsUser, header, children 
                 orgItems.push({ name: 'Assign Portfolios', href: route(`${rolePrefix}.portfolio-assignments.index`), icon: '👔' });
             }
 
-            // Committees and Resolutions (if routes exist)
+            // Add separator before governance
+            if (route().has(`${rolePrefix}.committees.index`) || route().has(`${rolePrefix}.resolutions.index`)) {
+                orgItems.push('---');
+            }
+
+            // Governance
             if (route().has(`${rolePrefix}.committees.index`)) {
                 orgItems.push({ name: 'Committees', href: route(`${rolePrefix}.committees.index`), icon: '👥' });
             }
@@ -240,7 +270,12 @@ export default function AuthenticatedLayout({ user: propsUser, header, children 
                 orgItems.push({ name: 'Resolutions', href: route(`${rolePrefix}.resolutions.index`), icon: '📋' });
             }
 
+            // Add separator before member operations
+            if (route().has(`${rolePrefix}.transfers.index`)) {
+                orgItems.push('---');
+            }
 
+            // Member Operations
             if (route().has(`${rolePrefix}.transfers.index`)) {
                 orgItems.push({ name: 'Member Transfers', href: route(`${rolePrefix}.transfers.index`), icon: '🔄' });
             }
@@ -248,22 +283,14 @@ export default function AuthenticatedLayout({ user: propsUser, header, children 
                 orgItems.push({ name: 'New Transfer', href: route(`${rolePrefix}.transfers.create`), icon: '➕' });
             }
 
-            // Profile Settings (moved from user menu)
-            if (route().has(isECPortfolio ? 'member.profile.edit' : `${rolePrefix}.profile.edit`)) {
-                orgItems.push({ name: 'Profile Settings', href: route(isECPortfolio ? 'member.profile.edit' : `${rolePrefix}.profile.edit`), icon: '⚙️' });
+            if (orgItems.length > 0) {
+                nav.push({
+                    name: 'Organization',
+                    icon: '🏛️',
+                    type: 'dropdown',
+                    items: orgItems,
+                });
             }
-
-            // Theme Settings (Admin Only)
-            if (route().has(`${rolePrefix}.theme.edit`)) {
-                orgItems.push({ name: 'Theme Settings', href: route(`${rolePrefix}.theme.edit`), icon: '🎨' });
-            }
-
-            nav.push({
-                name: 'Organization',
-                icon: '🏛️',
-                type: 'dropdown',
-                items: orgItems,
-            });
         }
 
         // Admins dropdown - State & District only
@@ -325,17 +352,21 @@ export default function AuthenticatedLayout({ user: propsUser, header, children 
             </button>
             {openDropdown === item.name && (
                 <div className="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-2xl py-2 z-[100] border border-gray-200 max-h-[70vh] overflow-y-auto">
-                    {item.items.map((subItem) => (
-                        <Link
-                            key={subItem.name}
-                            href={subItem.href}
-                            className="flex items-center px-5 py-3 text-base text-gray-700 hover:text-teal-700 hover:bg-teal-50 transition-colors font-medium"
-                            onClick={() => setOpenDropdown(null)}
-                        >
-                            <span className="mr-3 text-lg">{subItem.icon}</span>
-                            {subItem.name}
-                        </Link>
-                    ))}
+                    {item.items.map((subItem, index) =>
+                        subItem === '---' ? (
+                            <div key={`separator-${index}`} className="border-t border-gray-200 my-1 mx-2" />
+                        ) : (
+                            <Link
+                                key={subItem.name}
+                                href={subItem.href}
+                                className="flex items-center px-5 py-3 text-base text-gray-700 hover:text-teal-700 hover:bg-teal-50 transition-colors font-medium"
+                                onClick={() => setOpenDropdown(null)}
+                            >
+                                <span className="mr-3 text-lg">{subItem.icon}</span>
+                                {subItem.name}
+                            </Link>
+                        )
+                    )}
                 </div>
             )}
         </div>

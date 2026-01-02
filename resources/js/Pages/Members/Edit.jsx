@@ -2,7 +2,7 @@ import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useState, useEffect } from 'react';
 
-export default function Edit({ member, states, districts, tehsils, authScope }) {
+export default function Edit({ member, states, districts, tehsils, departments, authScope }) {
     const { auth } = usePage().props;
     // Get user role from authScope or fallback
     const role = authScope?.role || 'member';
@@ -33,6 +33,7 @@ export default function Edit({ member, states, districts, tehsils, authScope }) 
     const { data, setData, post, processing, errors } = useForm({
         _method: 'PUT',
         tehsil_id: member.tehsil_id || '',
+        department_id: member.department_id || '',
         member_status: getInitialStatus(),
         name: member.name || '',
         parentage: member.parentage || '',
@@ -279,20 +280,43 @@ export default function Edit({ member, states, districts, tehsils, authScope }) 
                                     Professional Information
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Department <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={data.school_name}
-                                            onChange={(e) => setData('school_name', e.target.value)}
-                                            className="w-full border-gray-300 rounded-lg"
-                                            required
-                                        />
-                                        {errors.school_name && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.school_name}</p>
-                                        )}
+                                    <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Department <span className="text-red-500">*</span>
+                                            </label>
+                                            <select
+                                                value={data.department_id}
+                                                onChange={(e) => setData('department_id', e.target.value)}
+                                                className="w-full border-gray-300 rounded-lg"
+                                                required
+                                            >
+                                                <option value="">Select Department</option>
+                                                {departments && departments.map(dept => (
+                                                    <option key={dept.id} value={dept.id}>{dept.name}</option>
+                                                ))}
+                                            </select>
+                                            {errors.department_id && (
+                                                <p className="mt-1 text-sm text-red-600">{errors.department_id}</p>
+                                            )}
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Place of Posting / School <span className="text-red-500">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={data.school_name}
+                                                onChange={(e) => setData('school_name', e.target.value)}
+                                                className="w-full border-gray-300 rounded-lg"
+                                                required
+                                                placeholder="e.g. Govt High School Srinagar"
+                                            />
+                                            {errors.school_name && (
+                                                <p className="mt-1 text-sm text-red-600">{errors.school_name}</p>
+                                            )}
+                                        </div>
                                     </div>
 
                                     <div>

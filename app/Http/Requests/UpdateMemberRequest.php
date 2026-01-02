@@ -23,6 +23,7 @@ class UpdateMemberRequest extends FormRequest
     {
         return [
             'tehsil_id' => 'sometimes|required|exists:tehsils,id',
+            'department_id' => 'sometimes|nullable|exists:departments,id',
             'name' => 'sometimes|required|string|max:255',
             'parentage' => 'sometimes|required|string|max:255',
             'photo' => 'nullable|image|max:2048',

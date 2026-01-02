@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\HeroSlide;
 use App\Models\HomepageContent;
+use App\Models\Department;
 use App\Models\State;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -23,6 +24,7 @@ class AdminHomepageController extends Controller
             'officeProfile' => $officeProfile,
             'heroSlides' => HeroSlide::orderBy('sort_order')->get(),
             'contents' => HomepageContent::all()->keyBy('key'),
+            'departments' => Department::where('is_active', true)->orderBy('name')->get(),
         ]);
     }
 
@@ -174,9 +176,6 @@ class AdminHomepageController extends Controller
         return back()->with('success', 'Slide updated.');
     }
 
-    /**
-     * Delete Slide.
-     */
     public function destroySlide(HeroSlide $slide)
     {
         if ($slide->image_path) {
@@ -185,4 +184,32 @@ class AdminHomepageController extends Controller
         $slide->delete();
         return back()->with('success', 'Slide removed.');
     }
+
+    /**
+     * Store Department.
+     */
+    public function storeDepartment(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'icon' => 'nullable|string|max:50',
+        ]);
+
+        $validated['is_active'] = true;
+
+        Department::create($validated);
+
+        return back()->with('success', 'Department added successfully.');
+    }
+
+    /**
+     * Delete Department.
+     */
+    public function destroyDepartment(Department $department)
+    {
+        $department->delete();
+        return back()->with('success', 'Department removed.');
+    }
+
 }

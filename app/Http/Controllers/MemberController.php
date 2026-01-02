@@ -177,6 +177,7 @@ class MemberController extends Controller
             'states' => State::with('districts.tehsils')->get(),
             'districts' => District::with('tehsils')->get(),
             'tehsils' => Tehsil::with('district')->get(),
+            'departments' => \App\Models\Department::where('is_active', true)->orderBy('name')->get(),
             'authScope' => [
                 'district_id' => $request->user()->district_id,
                 'tehsil_id' => $request->user()->tehsil_id,
@@ -244,6 +245,7 @@ class MemberController extends Controller
                 'membership_id' => $membershipId,
                 'tehsil_id' => $validated['tehsil_id'],
                 'district_id' => $tehsil->district_id,
+                'department_id' => $validated['department_id'] ?? null,
                 'name' => $validated['name'],
                 'parentage' => $validated['parentage'],
                 'photo_path' => $photoPath,
@@ -299,6 +301,7 @@ class MemberController extends Controller
             'states' => State::with('districts.tehsils')->get(),
             'districts' => District::with('tehsils')->get(),
             'tehsils' => Tehsil::with('district')->get(),
+            'departments' => \App\Models\Department::where('is_active', true)->orderBy('name')->get(),
             'authScope' => [
                 'district_id' => $request->user()->district_id,
                 'tehsil_id' => $request->user()->tehsil_id,

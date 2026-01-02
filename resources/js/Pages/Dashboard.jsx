@@ -6,7 +6,6 @@ import { useState } from 'react';
 
 export default function Dashboard({ auth, stats, recentActivities, upcomingEvents, pendingApprovals, pendingWinners, charts }) {
     const role = auth.user.role;
-    const [quickActionsPage, setQuickActionsPage] = useState(0);
     const [recentActivitiesPage, setRecentActivitiesPage] = useState(0);
 
     const getRolePrefix = () => {
@@ -48,179 +47,251 @@ export default function Dashboard({ auth, stats, recentActivities, upcomingEvent
         return titles[role] || 'User';
     };
 
-    // Build Quick Actions array for pagination
+    // Build Quick Actions array - TOP 6-8 MOST USED ONLY
     const getQuickActions = () => {
         const actions = [];
+        const isDistrictAdmin = role === 'district_admin' || role === 'district_president';
+        const isTehsilAdmin = role?.toLowerCase().includes('tehsil');
+        const isSuperAdmin = role === 'super_admin';
 
-        // Add Member - tehsil only
-        if (role?.toLowerCase().includes('tehsil')) {
-            actions.push({
-                href: route('tehsil.members.create'),
-                icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>,
-                title: 'Add New Member',
-                bgColor: 'from-red-50 to-amber-50',
-                iconColor: 'from-red-500 to-red-600'
-            });
+        // STATE / SUPER ADMIN - Top 6 most used
+        if (isSuperAdmin || role.includes('state')) {
+            // Primary Actions
+            if (isTehsilAdmin && route().has('tehsil.members.create')) {
+                actions.push({
+                    href: route('tehsil.members.create'),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>,
+                    title: 'Add New Member',
+                    bgColor: 'from-red-50 to-amber-50',
+                    iconColor: 'from-red-500 to-red-600'
+                });
+            }
+
+            if (route().has(`${rolePrefix}.elections.create`)) {
+                actions.push({
+                    href: route(`${rolePrefix}.elections.create`),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>,
+                    title: 'Create Election',
+                    bgColor: 'from-amber-50 to-yellow-50',
+                    iconColor: 'from-amber-500 to-amber-600'
+                });
+            }
+
+            // Most Accessed CMS
+            if (route().has('state.homepage.edit')) {
+                actions.push({
+                    href: route('state.homepage.edit'),
+                    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>,
+                    title: 'Homepage Manager',
+                    bgColor: 'from-indigo-50 to-purple-50',
+                    iconColor: 'from-indigo-500 to-purple-600'
+                });
+            }
+
+            // Most Viewed
+            if (route().has(`${rolePrefix}.members.index`)) {
+                actions.push({
+                    href: route(`${rolePrefix}.members.index`),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>,
+                    title: 'View All Members',
+                    bgColor: 'from-orange-50 to-red-50',
+                    iconColor: 'from-orange-500 to-orange-600'
+                });
+            }
+
+            // Frequent Checks
+            if (route().has('state.grievances.index')) {
+                actions.push({
+                    href: route('state.grievances.index'),
+                    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>,
+                    title: 'Manage Grievances',
+                    bgColor: 'from-pink-50 to-rose-50',
+                    iconColor: 'from-pink-500 to-rose-600'
+                });
+            }
+
+            // Personal Settings
+            if (route().has(`${rolePrefix}.profile.edit`)) {
+                actions.push({
+                    href: route(`${rolePrefix}.profile.edit`),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>,
+                    title: 'My Profile',
+                    bgColor: 'from-purple-50 to-pink-50',
+                    iconColor: 'from-purple-500 to-pink-600'
+                });
+            }
         }
+        // DISTRICT ADMIN - Top 6
+        else if (isDistrictAdmin) {
+            if (route().has('tehsil.members.create')) {
+                actions.push({
+                    href: route('tehsil.members.create'),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>,
+                    title: 'Add New Member',
+                    bgColor: 'from-red-50 to-amber-50',
+                    iconColor: 'from-red-500 to-red-600'
+                });
+            }
 
-        // Create Election
-        if ((role.includes('admin') || role.includes('president')) && route().has(`${rolePrefix}.elections.create`)) {
-            actions.push({
-                href: route(`${rolePrefix}.elections.create`),
-                icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>,
-                title: 'Create Election',
-                bgColor: 'from-amber-50 to-yellow-50',
-                iconColor: 'from-amber-500 to-amber-600'
-            });
+            if (route().has(`${rolePrefix}.elections.create`)) {
+                actions.push({
+                    href: route(`${rolePrefix}.elections.create`),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>,
+                    title: 'Create Election',
+                    bgColor: 'from-amber-50 to-yellow-50',
+                    iconColor: 'from-amber-500 to-amber-600'
+                });
+            }
+
+            if (route().has('district.district-members')) {
+                actions.push({
+                    href: route('district.district-members'),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>,
+                    title: 'View District Members',
+                    bgColor: 'from-orange-50 to-red-50',
+                    iconColor: 'from-orange-500 to-orange-600'
+                });
+            }
+
+            if (route().has(`${rolePrefix}.admins.create`)) {
+                actions.push({
+                    href: route(`${rolePrefix}.admins.create`),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
+                    title: 'Create Tehsil Admin',
+                    bgColor: 'from-yellow-50 to-orange-50',
+                    iconColor: 'from-yellow-500 to-yellow-600'
+                });
+            }
+
+            if (route().has(`${rolePrefix}.office-profile.edit`)) {
+                actions.push({
+                    href: route(`${rolePrefix}.office-profile.edit`),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>,
+                    title: 'Office Profile',
+                    bgColor: 'from-blue-50 to-indigo-50',
+                    iconColor: 'from-blue-500 to-indigo-600'
+                });
+            }
+
+            if (route().has(`${rolePrefix}.profile.edit`)) {
+                actions.push({
+                    href: route(`${rolePrefix}.profile.edit`),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>,
+                    title: 'My Profile',
+                    bgColor: 'from-purple-50 to-pink-50',
+                    iconColor: 'from-purple-500 to-pink-600'
+                });
+            }
         }
+        // TEHSIL ADMIN - Top 6
+        else if (isTehsilAdmin) {
+            if (route().has('tehsil.members.create')) {
+                actions.push({
+                    href: route('tehsil.members.create'),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>,
+                    title: 'Add New Member',
+                    bgColor: 'from-red-50 to-amber-50',
+                    iconColor: 'from-red-500 to-red-600'
+                });
+            }
 
-        // Create Admin
-        if (role === 'super_admin' || role === 'district_admin' || role === 'district_president') {
-            actions.push({
-                href: route(`${rolePrefix}.admins.create`),
-                icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
-                title: `Create ${role === 'super_admin' ? 'District Admin' : 'Tehsil Admin'}`,
-                bgColor: 'from-yellow-50 to-orange-50',
-                iconColor: 'from-yellow-500 to-yellow-600'
-            });
+            if (route().has(`${rolePrefix}.members.index`)) {
+                actions.push({
+                    href: route(`${rolePrefix}.members.index`),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>,
+                    title: 'View All Members',
+                    bgColor: 'from-orange-50 to-red-50',
+                    iconColor: 'from-orange-500 to-orange-600'
+                });
+            }
+
+            if (route().has(`${rolePrefix}.elections.create`)) {
+                actions.push({
+                    href: route(`${rolePrefix}.elections.create`),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>,
+                    title: 'Create Election',
+                    bgColor: 'from-amber-50 to-yellow-50',
+                    iconColor: 'from-amber-500 to-amber-600'
+                });
+            }
+
+            if (route().has(`${rolePrefix}.office-profile.edit`)) {
+                actions.push({
+                    href: route(`${rolePrefix}.office-profile.edit`),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>,
+                    title: 'Office Profile',
+                    bgColor: 'from-blue-50 to-indigo-50',
+                    iconColor: 'from-blue-500 to-indigo-600'
+                });
+            }
+
+            if (route().has(`${rolePrefix}.transfers.index`)) {
+                actions.push({
+                    href: route(`${rolePrefix}.transfers.index`),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>,
+                    title: 'Member Transfers',
+                    bgColor: 'from-green-50 to-emerald-50',
+                    iconColor: 'from-green-500 to-emerald-600'
+                });
+            }
+
+            if (route().has(`${rolePrefix}.profile.edit`)) {
+                actions.push({
+                    href: route(`${rolePrefix}.profile.edit`),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>,
+                    title: 'My Profile',
+                    bgColor: 'from-purple-50 to-pink-50',
+                    iconColor: 'from-purple-500 to-pink-600'
+                });
+            }
         }
+        // MEMBER - Top 4
+        else {
+            if (route().has('member.elections.index')) {
+                actions.push({
+                    href: route('member.elections.index'),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>,
+                    title: 'View Elections',
+                    bgColor: 'from-amber-50 to-yellow-50',
+                    iconColor: 'from-amber-500 to-amber-600'
+                });
+            }
 
-        // View All Members
-        if (route().has(`${rolePrefix}.members.index`)) {
-            actions.push({
-                href: route(`${rolePrefix}.members.index`),
-                icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>,
-                title: 'View All Members',
-                bgColor: 'from-orange-50 to-red-50',
-                iconColor: 'from-orange-500 to-orange-600'
-            });
-        }
+            if (route().has('member.attendance.index')) {
+                actions.push({
+                    href: route('member.attendance.index'),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>,
+                    title: 'My Attendance',
+                    bgColor: 'from-blue-50 to-indigo-50',
+                    iconColor: 'from-blue-500 to-indigo-600'
+                });
+            }
 
-        // Office Profile
-        if (route().has(`${rolePrefix}.office-profile.edit`)) {
-            actions.push({
-                href: route(`${rolePrefix}.office-profile.edit`),
-                icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>,
-                title: 'Office Profile / Constitution',
-                bgColor: 'from-blue-50 to-indigo-50',
-                iconColor: 'from-blue-500 to-indigo-600'
-            });
-        }
+            if (route().has('grievances.index')) {
+                actions.push({
+                    href: route('grievances.index'),
+                    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>,
+                    title: 'Submit Grievance',
+                    bgColor: 'from-pink-50 to-rose-50',
+                    iconColor: 'from-pink-500 to-rose-600'
+                });
+            }
 
-        // Homepage Manager - Super Admin
-        if (role === 'super_admin') {
-            actions.push({
-                href: route('state.homepage.edit'),
-                icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>,
-                title: 'Homepage Manager',
-                bgColor: 'from-indigo-50 to-purple-50',
-                iconColor: 'from-indigo-500 to-purple-600'
-            });
-            actions.push({
-                href: route('state.grievances.index'),
-                icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>,
-                title: 'Manage Grievances',
-                bgColor: 'from-pink-50 to-rose-50',
-                iconColor: 'from-pink-500 to-rose-600'
-            });
-        }
-
-        // Profile Settings
-        if (route().has(`${rolePrefix}.profile.edit`)) {
-            actions.push({
-                href: route(`${rolePrefix}.profile.edit`),
-                icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>,
-                title: 'Profile Settings',
-                bgColor: 'from-purple-50 to-pink-50',
-                iconColor: 'from-purple-500 to-pink-600'
-            });
-        }
-
-        // Resolutions
-        if (route().has(`${rolePrefix}.resolutions.index`)) {
-            actions.push({
-                href: route(`${rolePrefix}.resolutions.index`),
-                icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
-                title: 'Resolutions',
-                bgColor: 'from-green-50 to-emerald-50',
-                iconColor: 'from-green-500 to-emerald-600'
-            });
-        }
-
-        // Committees
-        if (route().has(`${rolePrefix}.committees.index`)) {
-            actions.push({
-                href: route(`${rolePrefix}.committees.index`),
-                icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
-                title: 'Committees',
-                bgColor: 'from-teal-50 to-cyan-50',
-                iconColor: 'from-teal-500 to-cyan-600'
-            });
-        }
-
-        // --- NEW MODULES (State/Super Admin) ---
-
-        // Leadership Messages
-        if (route().has('state.messages.index') && (role === 'super_admin' || role.includes('state'))) {
-            actions.push({
-                href: route('state.messages.index'),
-                icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>,
-                title: 'Leadership Messages',
-                bgColor: 'from-blue-50 to-cyan-50',
-                iconColor: 'from-blue-500 to-cyan-600'
-            });
-        }
-
-        // Achievements
-        if (route().has('state.achievements.index') && (role === 'super_admin' || role.includes('state'))) {
-            actions.push({
-                href: route('state.achievements.index'),
-                icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>,
-                title: 'Achievements',
-                bgColor: 'from-yellow-50 to-amber-50',
-                iconColor: 'from-yellow-500 to-amber-600'
-            });
-        }
-
-        // Govt Orders
-        if (route().has('state.govt-orders.index') && (role === 'super_admin' || role.includes('state'))) {
-            actions.push({
-                href: route('state.govt-orders.index'),
-                icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
-                title: 'Govt Orders',
-                bgColor: 'from-indigo-50 to-violet-50',
-                iconColor: 'from-indigo-500 to-violet-600'
-            });
-        }
-
-        // Academic Calendar
-        if (route().has('state.calendars.index') && (role === 'super_admin' || role.includes('state'))) {
-            actions.push({
-                href: route('state.calendars.index'),
-                icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>,
-                title: 'Academic Calendar',
-                bgColor: 'from-pink-50 to-rose-50',
-                iconColor: 'from-pink-500 to-rose-600'
-            });
-        }
-
-        // Important Links
-        if (route().has('state.links.index') && (role === 'super_admin' || role.includes('state'))) {
-            actions.push({
-                href: route('state.links.index'),
-                icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>,
-                title: 'Important Links',
-                bgColor: 'from-green-50 to-emerald-50',
-                iconColor: 'from-green-500 to-emerald-600'
-            });
+            if (route().has('member.profile.edit')) {
+                actions.push({
+                    href: route('member.profile.edit'),
+                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>,
+                    title: 'My Profile',
+                    bgColor: 'from-purple-50 to-pink-50',
+                    iconColor: 'from-purple-500 to-pink-600'
+                });
+            }
         }
 
         return actions;
     };
 
     const quickActions = getQuickActions();
-    const totalPages = Math.ceil(quickActions.length / 3);
-    const paginatedActions = quickActions.slice(quickActionsPage * 3, (quickActionsPage + 1) * 3);
 
     // Recent Activities Pagination
     const activitiesPerPage = 3;
@@ -465,22 +536,10 @@ export default function Dashboard({ auth, stats, recentActivities, upcomingEvent
                             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
                                 <div className="flex items-center justify-between mb-6">
                                     <h3 className="text-xl font-bold text-gray-800">Quick Actions</h3>
-                                    <div className="flex items-center gap-1">
-                                        {totalPages > 1 && (
-                                            <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
-                                                <button onClick={() => setQuickActionsPage(Math.max(0, quickActionsPage - 1))} disabled={quickActionsPage === 0} className="p-1 rounded hover:bg-white disabled:opacity-30">
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-                                                </button>
-                                                <button onClick={() => setQuickActionsPage(Math.min(totalPages - 1, quickActionsPage + 1))} disabled={quickActionsPage === totalPages - 1} className="p-1 rounded hover:bg-white disabled:opacity-30">
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-3">
-                                    {paginatedActions.map((action, index) => (
+                                    {quickActions.map((action, index) => (
                                         <Link
                                             key={index}
                                             href={action.href}

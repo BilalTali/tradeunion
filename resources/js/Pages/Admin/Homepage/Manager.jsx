@@ -8,7 +8,7 @@ import DangerButton from '@/Components/DangerButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextArea from '@/Components/TextArea';
 
-export default function Manager({ auth, officeProfile, heroSlides, contents }) {
+export default function Manager({ auth, officeProfile, heroSlides, contents, departments }) {
     const [activeTab, setActiveTab] = useState('global');
 
     return (
@@ -42,6 +42,12 @@ export default function Manager({ auth, officeProfile, heroSlides, contents }) {
                                     icon="📝"
                                     label="Content Sections"
                                 />
+                                <TabButton
+                                    active={activeTab === 'departments'}
+                                    onClick={() => setActiveTab('departments')}
+                                    icon="🏢"
+                                    label="Departments"
+                                />
                             </nav>
                         </div>
                     </div>
@@ -51,6 +57,7 @@ export default function Manager({ auth, officeProfile, heroSlides, contents }) {
                         {activeTab === 'global' && <GlobalSettings profile={officeProfile} />}
                         {activeTab === 'slider' && <SliderManager slides={heroSlides} />}
                         {activeTab === 'sections' && <SectionsManager contents={contents} />}
+                        {activeTab === 'departments' && <DepartmentManager departments={departments} />}
                     </div>
                 </div>
             </div>
@@ -764,6 +771,120 @@ function ObjectEditor({ data, onChange, fields }) {
                     )}
                 </div>
             ))}
+        </div>
+    );
+}
+
+// 6. DEPARTMENT MANAGER
+function DepartmentManager({ departments = [] }) {
+    const { data, setData, post, processing, errors, reset, recentlySuccessful } = useForm({
+        name: '',
+        description: '',
+        icon: '🏢'
+    });
+
+    const submit = (e) => {
+        e.preventDefault();
+        post(route('state.homepage.departments.store'), {
+            onSuccess: () => reset()
+        });
+    };
+
+    return (
+        <div className="space-y-6">
+            {/* Create Department */}
+            <div className="bg-white shadow sm:rounded-lg p-6">
+                <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Add New Department</h3>
+                <form onSubmit={submit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <InputLabel htmlFor="dept_name" value="Department Name" />
+                        <TextInput
+                            id="dept_name"
+                            value={data.name}
+                            onChange={e => setData('name', e.target.value)}
+                            className="w-full mt-1"
+                            placeholder="e.g., Academic Affairs"
+                            required
+                        />
+                        {errors.name && <div className="text-red-500 text-sm mt-1">{errors.name}</div>}
+                    </div>
+
+                    <div>
+                        <InputLabel htmlFor="dept_icon" value="Icon (Emoji)" />
+                        <TextInput
+                            id="dept_icon"
+                            value={data.icon}
+                            onChange={e => setData('icon', e.target.value)}
+                            className="w-full mt-1"
+                            placeholder="🏢"
+                        />
+                        {errors.icon && <div className="text-red-500 text-sm mt-1">{errors.icon}</div>}
+                    </div>
+
+                    <div className="md:col-span-2">
+                        <InputLabel htmlFor="dept_description" value="Description" />
+                        <TextArea
+                            id="dept_description"
+                            value={data.description}
+                            onChange={e => setData('description', e.target.value)}
+                            className="w-full mt-1"
+                            rows="3"
+                            placeholder="Brief description of this department's role..."
+                        />
+                        {errors.description && <div className="text-red-500 text-sm mt-1">{errors.description}</div>}
+                    </div>
+
+                    <div className="md:col-span-2 flex justify-end gap-4">
+                        <PrimaryButton disabled={processing} className="w-full md:w-auto justify-center">
+                            Add Department
+                        </PrimaryButton>
+                        {recentlySuccessful && <span className="text-green-600 font-bold self-center">Added!</span>}
+                    </div>
+                </form>
+            </div>
+
+            {/* Department List */}
+            <div className="bg-white shadow sm:rounded-lg overflow-hidden">
+                <h3 className="text-lg font-medium leading-6 text-gray-900 p-6 border-b">Active Departments</h3>
+                {departments.length === 0 ? (
+                    <p className="p-6 text-center text-gray-500">No departments created yet.</p>
+                ) : (
+                    <div className="divide-y divide-gray-200">
+                        {departments.map(dept => (
+                            <DepartmentItem key={dept.id} department={dept} />
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+function DepartmentItem({ department }) {
+    const { delete: destroy, processing } = useForm();
+
+    const handleDelete = () => {
+        if (confirm(`Are you sure you want to delete the "${department.name}" department?`)) {
+            destroy(route('state.homepage.departments.destroy', department.id));
+        }
+    };
+
+    return (
+        <div className="p-6 flex items-start gap-6 group hover:bg-gray-50 transition">
+            <div className="text-4xl flex-shrink-0">{department.icon || '🏢'}</div>
+            <div className="flex-1">
+                <h4 className="font-bold text-gray-900 text-lg">{department.name}</h4>
+                <p className="text-sm text-gray-600 mt-1">{department.description}</p>
+            </div>
+            <div>
+                <DangerButton
+                    onClick={handleDelete}
+                    disabled={processing}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                    Delete
+                </DangerButton>
+            </div>
         </div>
     );
 }

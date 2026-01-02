@@ -23,6 +23,7 @@ class StoreMemberRequest extends FormRequest
     {
         return [
             'tehsil_id' => 'required|exists:tehsils,id',
+            'department_id' => 'required|exists:departments,id',
             'member_status' => 'required|in:Member,Tehsil Member,District Member,State Member',
             'name' => 'required|string|max:255',
             'parentage' => 'required|string|max:255',

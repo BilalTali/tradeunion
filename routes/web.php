@@ -246,7 +246,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/homepage/slides', [\App\Http\Controllers\AdminHomepageController::class, 'storeSlide'])->name('state.homepage.slides.store');
         Route::post('/homepage/slides/{slide}', [\App\Http\Controllers\AdminHomepageController::class, 'updateSlide'])->name('state.homepage.slides.update');
         Route::delete('/homepage/slides/{slide}', [\App\Http\Controllers\AdminHomepageController::class, 'destroySlide'])->name('state.homepage.slides.destroy');
+        Route::post('/homepage/departments', [\App\Http\Controllers\AdminHomepageController::class, 'storeDepartment'])->name('state.homepage.departments.store');
+        Route::delete('/homepage/departments/{department}', [\App\Http\Controllers\AdminHomepageController::class, 'destroyDepartment'])->name('state.homepage.departments.destroy');
         
+
         // Grievance Management (State Admin)
         Route::resource('grievances', \App\Http\Controllers\AdminGrievanceController::class)->names('state.grievances')->only(['index', 'update', 'destroy']);
 
