@@ -115,7 +115,7 @@ class HomepageContentSeeder extends Seeder
                 'title' => 'Latest Updates',
                 'subtitle' => 'Live scrolling updates',
                 'content' => json_encode([
-                    ['title' => 'Welcome to the new Teachers Union Portal!'],
+                    ['title' => 'Welcome to the new JKECC Portal!'],
                     ['title' => 'Elections upcoming soon - check your eligibility.'],
                     ['title' => 'Annual General Meeting scheduled for next month.'],
                 ]),
