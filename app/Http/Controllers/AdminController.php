@@ -97,15 +97,33 @@ class AdminController extends Controller
         }
 
         // Determine role based on current user
-        // Determine role based on current user
         if ($user->role === 'super_admin') {
             $validated['role'] = $validated['admin_role']; // district_admin or district_president
             $validated['district_id'] = $validated['entity_id'];
             $validated['tehsil_id'] = null;
+
+            // Check if admin already exists for this district
+            $existingAdmin = User::where('role', $validated['role'])
+                ->where('district_id', $validated['district_id'])
+                ->exists();
+
+            if ($existingAdmin) {
+                return back()->withErrors(['entity_id' => 'An admin with this role already exists for the selected District.']);
+            }
+
         } elseif (str_contains($user->role, 'district')) {
             $validated['role'] = $validated['admin_role']; // tehsil_admin or tehsil_president
             $validated['district_id'] = $user->district_id;
             $validated['tehsil_id'] = $validated['entity_id'];
+
+            // Check if admin already exists for this tehsil
+            $existingAdmin = User::where('role', $validated['role'])
+                ->where('tehsil_id', $validated['tehsil_id'])
+                ->exists();
+
+            if ($existingAdmin) {
+                return back()->withErrors(['entity_id' => 'An admin with this role already exists for the selected Tehsil.']);
+            }
         }
 
         // Map phone to mobile for database storage
@@ -225,16 +243,9 @@ class AdminController extends Controller
      */
     public function destroy(Request $request, User $admin)
     {
-        $user = $request->user();
-
-        if (!$this->canManageAdmin($user, $admin)) {
-            abort(403, 'Unauthorized');
-        }
-
-        $admin->delete();
-
+        // Admin deletion is disabled to protect member integrity
         return redirect()->route($this->getRolePrefix($request) . '.admins.index')
-            ->with('success', 'Admin deleted successfully.');
+            ->with('error', 'Admin deletion is disabled. You can only deactivate admins.');
     }
 
     /**

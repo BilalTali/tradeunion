@@ -123,19 +123,7 @@ export default function Index({ admins, canCreate, auth }) {
                                                         >
                                                             Edit
                                                         </Link>
-                                                        <Link
-                                                            href={route(`${rolePrefix}.admins.destroy`, admin.id)}
-                                                            method="delete"
-                                                            as="button"
-                                                            className="text-red-600 hover:text-red-900"
-                                                            onClick={(e) => {
-                                                                if (!confirm('Are you sure you want to delete this admin?')) {
-                                                                    e.preventDefault();
-                                                                }
-                                                            }}
-                                                        >
-                                                            Delete
-                                                        </Link>
+                                                        {/* Delete Disabled */}
                                                     </div>
                                                 </td>
                                             </tr>
