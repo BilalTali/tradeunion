@@ -14,7 +14,7 @@ export default function GovernmentOrders({ orders, departments, filters }) {
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#FF9933] via-[#ffffff] via-[#ffffff] to-[#138808] relative font-sans">
             <PublicNavbar />
-            <Head title="Government Orders - JKTU" />
+            <Head title="Government Orders - JKECC" />
 
             {/* Ashoka Chakra Watermark */}
             <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-20 pointer-events-none z-0">
@@ -125,8 +125,8 @@ export default function GovernmentOrders({ orders, departments, filters }) {
                                                     key={i}
                                                     href={link.url}
                                                     className={`px-4 py-2 rounded-lg border font-medium transition-colors ${link.active
-                                                            ? 'bg-[#138808] text-white border-[#138808]'
-                                                            : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-100 hover:text-[#FF9933]'
+                                                        ? 'bg-[#138808] text-white border-[#138808]'
+                                                        : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-100 hover:text-[#FF9933]'
                                                         }`}
                                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                                 />
