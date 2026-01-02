@@ -159,7 +159,7 @@ class HomepageSeeder extends Seeder
             ['key' => 'about'],
             [
                 'title' => 'About the Association',
-                'content' => 'The Jammu & Kashmir State Teachers Association (JKTU) is a legally recognized trade union representing the collective voice of educators across the Union Territory of Jammu & Kashmir. Established to protect the rights of teachers and promote excellence in education, JKTU operates on democratic principles with a transparent, three-tier organizational structure.',
+                'content' => 'The Jammu and Kashmir Employees Coordination Committee (JKECC) is a legally recognized trade union representing the collective voice of educators across the Union Territory of Jammu & Kashmir. Established to protect the rights of teachers and promote excellence in education, JKECC operates on democratic principles with a transparent, three-tier organizational structure.',
                 'settings' => ['bg_color' => '#f9fafb'],
                 'is_active' => true,
             ]

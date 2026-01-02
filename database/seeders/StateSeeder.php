@@ -21,7 +21,7 @@ class StateSeeder extends Seeder
                 'mission' => 'Democratic representation and collective voice for all teachers',
                 'contact_details' => [
                     'phone' => '+91-XXXXXXXXXX',
-                    'email' => 'info@jktu.org',
+                    'email' => 'info@jkecc.org',
                 ],
             ]
         );
