@@ -19,11 +19,14 @@ class DatabaseSeeder extends Seeder
             SuperAdminSeeder::class,
             StateSeeder::class,
             OfficeProfileSeeder::class, // Added Office Profile Seeder
+            DepartmentSeeder::class,
             DistrictTehsilSeeder::class,
             PortfolioSeeder::class,
             PortfolioPermissionSeeder::class,
             CommitteeSeeder::class,
             HomepageSeeder::class,
+            HomepageContentSeeder::class,
+            FixBrandingSeeder::class,
         ]);
     }
 }

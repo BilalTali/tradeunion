@@ -21,23 +21,23 @@ class HomepageSeeder extends Seeder
                 'content' => json_encode([
                     [
                         'icon' => '✊', 
-                        'title' => 'Empowerment & Advocacy', 
-                        'description' => 'Uniting teachers to advocate for fair wages, better working conditions, and professional dignity.'
+                        'title' => 'Stronger Voice, One Platform', 
+                        'description' => 'A unified digital union platform where every employee can raise issues, track actions, and participate in governance transparently.'
                     ],
                     [
-                        'icon' => '🎓', 
-                        'title' => 'Professional Growth', 
-                        'description' => 'Training programs, workshops, and skill enhancement opportunities for continuous learning.'
-                    ],
-                    [
-                        'icon' => '🏥', 
-                        'title' => 'Welfare & Insurance', 
-                        'description' => 'Access to welfare schemes, medical assistance, and insurance support for members and families.'
+                        'icon' => '📝', 
+                        'title' => 'Online Grievance Desk', 
+                        'description' => 'Submit issues digitally and track every action taken by union committees until resolution.'
                     ],
                     [
                         'icon' => '🗳️', 
-                        'title' => 'Democratic Governance', 
-                        'description' => 'Fair elections, transparent committee operations, and member participation in decision-making.'
+                        'title' => 'Digital Democratic Governance', 
+                        'description' => 'Multi‑level online election system with eligibility rules, OTP voting, and auditable results for fair leadership selection'
+                    ],
+                    [
+                        'icon' => '🆔', 
+                        'title' => 'Digital QR ID Cards', 
+                        'description' => 'Auto‑generated membership I‑Cards with QR code for public verification and quick identity checks'
                     ],
                 ]),
                 'is_active' => true,
