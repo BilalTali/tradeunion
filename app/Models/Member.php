@@ -16,6 +16,8 @@ class Member extends Model
         'tehsil_id',
         'district_id',
         'department_id',
+        'employee_category_id',
+        'designation_id',
         'name',
        'parentage',
         'photo_path',
@@ -96,6 +98,16 @@ class Member extends Model
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function employeeCategory()
+    {
+        return $this->belongsTo(EmployeeCategory::class);
+    }
+
+    public function designationModel()
+    {
+        return $this->belongsTo(Designation::class, 'designation_id');
     }
 
     public function commissionRoles()
