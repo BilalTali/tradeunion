@@ -246,6 +246,8 @@ class MemberController extends Controller
                 'tehsil_id' => $validated['tehsil_id'],
                 'district_id' => $tehsil->district_id,
                 'department_id' => $validated['department_id'] ?? null,
+                'employee_category_id' => $validated['employee_category_id'] ?? null,
+                'designation_id' => $validated['designation_id'] ?? null,
                 'name' => $validated['name'],
                 'parentage' => $validated['parentage'],
                 'photo_path' => $photoPath,
@@ -618,6 +620,45 @@ class MemberController extends Controller
                 
         } catch (\Exception $e) {
             return back()->with('error', 'Reinstatement failed: ' . $e->getMessage());
+        }
+    }
+
+
+    /**
+     * Get employee categories for a specific department (API for dependent dropdown)
+     */
+    public function getDepartmentCategories($departmentId)
+    {
+        try {
+            $department = \App\Models\Department::findOrFail($departmentId);
+            $categories = $department->employeeCategories()
+                ->where('employee_categories.is_active', true)
+                ->orderBy('employee_categories.name')
+                ->get(['employee_categories.id', 'employee_categories.code', 'employee_categories.name']);
+            
+            return response()->json($categories);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching department categories: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Get designations for a specific employee category (API for dependent dropdown)
+     */
+    public function getCategoryDesignations($categoryId)
+    {
+        try {
+            $category = \App\Models\EmployeeCategory::findOrFail($categoryId);
+            $designations = $category->designations()
+                ->where('designations.is_active', true)
+                ->orderBy('designations.name')
+                ->get(['designations.id', 'designations.name', 'designations.short_code']);
+            
+            return response()->json($designations);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching category designations: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }

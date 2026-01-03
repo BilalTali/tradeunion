@@ -53,6 +53,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/resolutions/eligible', [ResolutionEligibilityController::class, 'getEligible'])
         ->name('api.resolutions.eligible');
     
+    // API Routes for dependent dropdowns
+    Route::get('/api/departments/{department}/categories', [MemberController::class, 'getDepartmentCategories'])
+        ->name('api.departments.categories');
+    Route::get('/api/categories/{category}/designations', [MemberController::class, 'getCategoryDesignations'])
+        ->name('api.categories.designations');
+    
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -132,6 +138,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('portfolios', \App\Http\Controllers\Admin\PortfolioController::class)->names('state.portfolios');
         Route::resource('tehsils', \App\Http\Controllers\Admin\TehsilController::class)->names('state.tehsils');
         Route::resource('districts', \App\Http\Controllers\Admin\DistrictController::class)->names('state.districts');
+        Route::resource('departments', \App\Http\Controllers\Admin\DepartmentController::class)->names('state.departments');
         
         // Portfolio Assignments (assign members to portfolios)
         Route::resource('portfolio-assignments', \App\Http\Controllers\PortfolioAssignmentController::class)->names('state.portfolio-assignments')->only(['index', 'create', 'store', 'destroy']);
