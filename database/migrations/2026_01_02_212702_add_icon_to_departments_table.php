@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('departments', function (Blueprint $table) {
             $table->string('icon', 50)->nullable()->after('name');
+            $table->string('posting_label', 100)->nullable()->after('icon');
         });
     }
 
@@ -22,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('departments', function (Blueprint $table) {
-            $table->dropColumn('icon');
+            $table->dropColumn(['icon', 'posting_label']);
         });
     }
 };

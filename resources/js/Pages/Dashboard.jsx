@@ -123,16 +123,6 @@ export default function Dashboard({ auth, stats, recentActivities, upcomingEvent
         }
         // DISTRICT ADMIN - Top 6
         else if (isDistrictAdmin) {
-            if (route().has('tehsil.members.create')) {
-                actions.push({
-                    href: route('tehsil.members.create'),
-                    icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>,
-                    title: 'Add New Member',
-                    bgColor: 'from-red-50 to-amber-50',
-                    iconColor: 'from-red-500 to-red-600'
-                });
-            }
-
             if (route().has(`${rolePrefix}.elections.create`)) {
                 actions.push({
                     href: route(`${rolePrefix}.elections.create`),
