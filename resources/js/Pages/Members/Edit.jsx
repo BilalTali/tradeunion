@@ -34,6 +34,8 @@ export default function Edit({ member, states, districts, tehsils, departments, 
         _method: 'PUT',
         tehsil_id: member.tehsil_id || '',
         department_id: member.department_id || '',
+        employee_category_id: member.employee_category_id || '',
+        designation_id: member.designation_id || '',
         member_status: getInitialStatus(),
         name: member.name || '',
         parentage: member.parentage || '',
@@ -47,6 +49,17 @@ export default function Edit({ member, states, districts, tehsils, departments, 
 
     const [selectedDistrict, setSelectedDistrict] = useState(member.tehsil?.district_id || '');
     const [photoPreview, setPhotoPreview] = useState(member.photo_path ? `/storage/${member.photo_path}` : null);
+
+    // Get initial posting label
+    const getInitialPostingLabel = () => {
+        const dept = departments.find(d => d.id == member.department_id);
+        return dept?.posting_label || 'School';
+    };
+    const [postingLabel, setPostingLabel] = useState(getInitialPostingLabel());
+    const [availableCategories, setAvailableCategories] = useState([]);
+    const [availableDesignations, setAvailableDesignations] = useState([]);
+    const [loadingCategories, setLoadingCategories] = useState(false);
+    const [loadingDesignations, setLoadingDesignations] = useState(false);
 
     useEffect(() => {
         if (authScope?.district_id) {
@@ -69,6 +82,72 @@ export default function Edit({ member, states, districts, tehsils, departments, 
             setPhotoPreview(URL.createObjectURL(file));
         }
     };
+
+    const handleDepartmentChange = async (departmentId) => {
+        setData('department_id', departmentId);
+        setData('employee_category_id', ''); // Reset category
+        setData('designation_id', ''); // Reset designation
+        setAvailableCategories([]);
+        setAvailableDesignations([]);
+
+        const selectedDept = departments.find(d => d.id == departmentId);
+        if (selectedDept && selectedDept.posting_label) {
+            setPostingLabel(selectedDept.posting_label);
+        } else {
+            setPostingLabel('School');
+        }
+
+        // Fetch categories for this department
+        if (departmentId) {
+            setLoadingCategories(true);
+            try {
+                const response = await fetch(`/api/departments/${departmentId}/categories`);
+                const categories = await response.json();
+                setAvailableCategories(categories);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            } finally {
+                setLoadingCategories(false);
+            }
+        }
+    };
+
+    const handleCategoryChange = async (categoryId) => {
+        setData('employee_category_id', categoryId);
+        setData('designation_id', ''); // Reset designation
+        setAvailableDesignations([]);
+
+        // Fetch designations for this category
+        if (categoryId) {
+            setLoadingDesignations(true);
+            try {
+                const response = await fetch(`/api/categories/${categoryId}/designations`);
+                const designations = await response.json();
+                setAvailableDesignations(designations);
+            } catch (error) {
+                console.error('Error fetching designations:', error);
+            } finally {
+                setLoadingDesignations(false);
+            }
+        }
+    };
+
+    // Load initial categories and designations on mount
+    useEffect(() => {
+        if (member.department_id) {
+            fetch(`/api/departments/${member.department_id}/categories`)
+                .then(res => res.json())
+                .then(categories => setAvailableCategories(categories))
+                .catch(err => console.error('Error loading categories:', err));
+        }
+
+        if (member.employee_category_id) {
+            fetch(`/api/categories/${member.employee_category_id}/designations`)
+                .then(res => res.json())
+                .then(designations => setAvailableDesignations(designations))
+                .catch(err => console.error('Error loading designations:', err));
+        }
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -287,7 +366,7 @@ export default function Edit({ member, states, districts, tehsils, departments, 
                                             </label>
                                             <select
                                                 value={data.department_id}
-                                                onChange={(e) => setData('department_id', e.target.value)}
+                                                onChange={(e) => handleDepartmentChange(e.target.value)}
                                                 className="w-full border-gray-300 rounded-lg"
                                                 required
                                             >
@@ -303,7 +382,59 @@ export default function Edit({ member, states, districts, tehsils, departments, 
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Place of Posting / School <span className="text-red-500">*</span>
+                                                Employee Category <span className="text-red-500">*</span>
+                                            </label>
+                                            <select
+                                                value={data.employee_category_id}
+                                                onChange={(e) => handleCategoryChange(e.target.value)}
+                                                className="w-full border-gray-300 rounded-lg"
+                                                required
+                                                disabled={!data.department_id || loadingCategories}
+                                            >
+                                                <option value="">
+                                                    {loadingCategories ? 'Loading...' : 'Select Category'}
+                                                </option>
+                                                {availableCategories.map(cat => (
+                                                    <option key={cat.id} value={cat.id}>
+                                                        {cat.name} ({cat.code})
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            {errors.employee_category_id && (
+                                                <p className="mt-1 text-sm text-red-600">{errors.employee_category_id}</p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Designation <span className="text-red-500">*</span>
+                                            </label>
+                                            <select
+                                                value={data.designation_id}
+                                                onChange={(e) => setData('designation_id', e.target.value)}
+                                                className="w-full border-gray-300 rounded-lg"
+                                                required
+                                                disabled={!data.employee_category_id || loadingDesignations}
+                                            >
+                                                <option value="">
+                                                    {loadingDesignations ? 'Loading...' : 'Select Designation'}
+                                                </option>
+                                                {availableDesignations.map(desig => (
+                                                    <option key={desig.id} value={desig.id}>
+                                                        {desig.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            {errors.designation_id && (
+                                                <p className="mt-1 text-sm text-red-600">{errors.designation_id}</p>
+                                            )}
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Place of Posting / {postingLabel} <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -311,7 +442,7 @@ export default function Edit({ member, states, districts, tehsils, departments, 
                                                 onChange={(e) => setData('school_name', e.target.value)}
                                                 className="w-full border-gray-300 rounded-lg"
                                                 required
-                                                placeholder="e.g. Govt High School Srinagar"
+                                                placeholder={`e.g. Govt High ${postingLabel} Srinagar`}
                                             />
                                             {errors.school_name && (
                                                 <p className="mt-1 text-sm text-red-600">{errors.school_name}</p>
