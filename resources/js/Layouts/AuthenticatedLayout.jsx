@@ -597,7 +597,7 @@ export default function AuthenticatedLayout({ user: propsUser, header, children 
                                         {item.name}
                                     </div>
                                     <div className="pl-8 space-y-1">
-                                        {item.items.map((subItem) => (
+                                        {item.items.filter(subItem => subItem !== '---').map((subItem) => (
                                             <Link
                                                 key={subItem.name}
                                                 href={subItem.href}
